@@ -1,0 +1,163 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Gestion des Commandes — Mikaia Admin{% endblock %}
+
+{% block body %}
+<div class="space-y-6">
+
+    <!-- Top Header -->
+    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 border-b border-[#3b271c] pb-5">
+        <div>
+            <h1 class="text-3xl font-serif font-bold text-white tracking-wide">Commandes Client</h1>
+            <p class="text-xs text-stone-400 mt-1">Suivez les commandes en direct et gérez leur avancement en cuisine.</p>
+        </div>
+    </div>
+
+    <!-- Quick Stats Cards (KPIs) -->
+    <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        <div class="bg-[#18100a] border border-[#3b271c] rounded-2xl p-4 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center text-xl font-bold">
+                ⏳
+            </div>
+            <div>
+                <span class="text-[11px] text-stone-400 uppercase font-semibold">En Attente</span>
+                <div class="text-2xl font-bold text-white">
+                    {{ orders|filter(o => (o.status ?? 'pending') == 'pending')|length }}
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#18100a] border border-[#3b271c] rounded-2xl p-4 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-blue-500/10 border border-blue-500/20 text-blue-400 flex items-center justify-center text-xl font-bold">
+                🍳
+            </div>
+            <div>
+                <span class="text-[11px] text-stone-400 uppercase font-semibold">En Cuisine</span>
+                <div class="text-2xl font-bold text-white">
+                    {{ orders|filter(o => (o.status ?? '') == 'preparing')|length }}
+                </div>
+            </div>
+        </div>
+
+        <div class="bg-[#18100a] border border-[#3b271c] rounded-2xl p-4 flex items-center gap-4">
+            <div class="w-12 h-12 rounded-xl bg-[#8CD62B]/10 border border-[#8CD62B]/20 text-[#8CD62B] flex items-center justify-center text-xl font-bold">
+                ✅
+            </div>
+            <div>
+                <span class="text-[11px] text-stone-400 uppercase font-semibold">Servies / Livrées</span>
+                <div class="text-2xl font-bold text-white">
+                    {{ orders|filter(o => (o.status ?? '') == 'completed')|length }}
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Main Orders Table View -->
+    <div class="bg-[#18100a] border border-[#3b271c] rounded-2xl overflow-hidden shadow-2xl">
+        <div class="p-4 bg-[#24170f] border-b border-[#3b271c] flex items-center justify-between">
+            <span class="text-xs font-bold text-stone-300 uppercase tracking-wider">Toutes les commandes</span>
+            <span class="text-xs text-stone-500 font-semibold">{{ orders|length }} Commande(s) au total</span>
+        </div>
+
+        <div class="overflow-x-auto">
+            <table class="w-full text-left text-sm text-stone-300">
+                <thead class="bg-[#1c120c] text-stone-400 uppercase text-[11px] tracking-wider border-b border-[#3b271c]">
+                    <tr>
+                        <th class="p-4">N° Commande</th>
+                        <th class="p-4">Client / Table</th>
+                        <th class="p-4">Détails de la commande</th>
+                        <th class="p-4">Total</th>
+                        <th class="p-4">Statut</th>
+                        <th class="p-4 text-right">Mettre à jour</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-[#3b271c]">
+                    {% for order in orders %}
+                    {% set status = order.status ?? 'pending' %}
+                    <tr class="hover:bg-[#20140c] transition duration-150">
+                        <!-- ID -->
+                        <td class="p-4 font-mono text-xs text-stone-400 font-bold">
+                            #{{ order.id ?? loop.index }}
+                        </td>
+
+                        <!-- Client / Table -->
+                        <td class="p-4">
+                            <div class="font-bold text-white">{{ order.customerName ?? order.clientName ?? 'Client Passage' }}</div>
+                            <div class="text-xs text-stone-500">{{ order.tableNumber ? 'Table ' ~ order.tableNumber : (order.phone ?? 'Sur place') }}</div>
+                        </td>
+
+                        <!-- Plats commandés -->
+                        <td class="p-4 text-xs text-stone-300">
+                            {% if order.items is defined and order.items|length > 0 %}
+                                <ul class="space-y-1">
+                                    {% for item in order.items %}
+                                        <li><span class="text-[#8CD62B] font-bold">{{ item.quantity ?? 1 }}x</span> {{ item.dish.name ?? item.productName ?? 'Plat' }}</li>
+                                    {% endfor %}
+                                </ul>
+                            {% else %}
+                                <span class="text-stone-500 italic">Détails non spécifiés</span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Total -->
+                        <td class="p-4 font-bold text-[#8CD62B]">
+                            {{ (order.totalPrice ?? order.total ?? 0)|number_format(0, '', ' ') }} Ar
+                        </td>
+
+                        <!-- Badge Statut -->
+                        <td class="p-4">
+                            {% if status == 'pending' %}
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/20 animate-pulse">
+                                    ● En attente
+                                </span>
+                            {% elseif status == 'preparing' %}
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                    🍳 En préparation
+                                </span>
+                            {% elseif status == 'completed' %}
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#8CD62B]/10 text-[#8CD62B] border border-[#8CD62B]/20">
+                                    ✓ Livrée
+                                </span>
+                            {% else %}
+                                <span class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-red-500/10 text-red-400 border border-red-500/20">
+                                    ✕ Annulée
+                                </span>
+                            {% endif %}
+                        </td>
+
+                        <!-- Actions rapides de changement de statut -->
+                        <td class="p-4 text-right">
+                            <form method="post" action="{{ path('app_admin_order_status', {'id': order.id ?? 1}) }}" class="inline-flex items-center gap-1">
+                                <input type="hidden" name="_token" value="{{ csrf_token('status' ~ (order.id ?? 1)) }}">
+                                
+                                {% if status == 'pending' %}
+                                    <button name="status" value="preparing" class="bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white border border-blue-500/30 text-xs px-3 py-1.5 rounded-lg transition">
+                                        Lancer en cuisine
+                                    </button>
+                                {% elseif status == 'preparing' %}
+                                    <button name="status" value="completed" class="bg-[#8CD62B]/20 hover:bg-[#8CD62B] text-[#8CD62B] hover:text-black border border-[#8CD62B]/30 text-xs px-3 py-1.5 font-semibold rounded-lg transition">
+                                        Marquer Prêt
+                                    </button>
+                                {% endif %}
+
+                                {% if status != 'cancelled' and status != 'completed' %}
+                                    <button name="status" value="cancelled" onclick="return confirm('Annuler cette commande ?');" class="text-stone-500 hover:text-red-400 text-xs px-2 py-1.5 transition">
+                                        Annuler
+                                    </button>
+                                {% endif %}
+                            </form>
+                        </td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="6" class="p-12 text-center text-stone-500">
+                            <p class="text-sm">Aucune commande enregistrée pour le moment.</p>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+{% endblock %}

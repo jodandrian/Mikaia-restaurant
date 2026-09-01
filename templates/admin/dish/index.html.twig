@@ -1,0 +1,66 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Dish Management — Mikaia Admin{% endblock %}
+
+{% block body %}
+<div class="space-y-6">
+    <!-- Header Section with Action Button -->
+    <div class="flex justify-between items-center">
+        <div>
+            <h1 class="text-2xl font-serif font-bold text-white">Dish Catalog</h1>
+            <p class="text-xs text-stone-400 mt-1">Manage dishes visible on the front-page restaurant menu.</p>
+        </div>
+        <a href="{{ path('app_admin_dish_add') }}" class="bg-[#8CD62B] text-black font-semibold text-sm px-4 py-2.5 rounded-xl hover:bg-opacity-90 transition flex items-center gap-2">
+            + Add New Dish
+        </a>
+    </div>
+
+    <!-- Data Table View -->
+    <div class="bg-[#18100a] border border-[#3b271c] rounded-2xl overflow-hidden shadow-xl">
+        <table class="w-full text-left text-sm text-stone-300">
+            <thead class="bg-[#24170f] text-stone-400 uppercase text-xs border-b border-[#3b271c]">
+                <tr>
+                    <th class="p-4">Dish</th>
+                    <th class="p-4">Category</th>
+                    <th class="p-4">Price</th>
+                    <th class="p-4 text-right">Actions</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-[#3b271c]">
+                {# Supporte à la fois 'dishes' (défaut Symfony) et 'plats' #}
+                {% for plat in dishes|default(plats|default([])) %}
+                <tr class="hover:bg-[#20140c] transition">
+                    <td class="p-4 font-semibold text-white flex items-center gap-3">
+                        {% if plat.imageUrl %}
+                            <img src="{{ plat.imageUrl starts with 'http' ? plat.imageUrl : asset('uploads/images/' ~ plat.imageUrl) }}" alt="{{ plat.name }}" class="w-12 h-12 object-cover rounded-xl border border-[#3b271c]">
+                        {% endif %}
+                        <div>
+                            <div>{{ plat.name }}</div>
+                            {% if plat.badge is defined and plat.badge %}
+                                <span class="text-[10px] text-[#8CD62B] bg-[#8CD62B]/10 px-2 py-0.5 rounded-full font-semibold">{{ plat.badge }}</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="p-4 text-stone-400">{{ plat.category.name ?? plat.category.nomCategory ?? '-' }}</td>
+                    <td class="p-4 text-[#8CD62B] font-bold">{{ plat.price|number_format(0, '', ' ') }} Ar</td>
+                    <td class="p-4 text-right space-x-3">
+                        <!-- Edit Button -->
+                        <a href="{{ path('app_admin_dish_edit', {'id': plat.id}) }}" class="text-amber-400 hover:text-amber-300 font-medium transition">Edit</a>
+                        
+                        <!-- Secure Deletion Form using POST & CSRF Token -->
+                        <form method="post" action="{{ path('app_admin_dish_delete', {'id': plat.id}) }}" class="inline-block" onsubmit="return confirm('Are you sure you want to delete this dish?');">
+                            <input type="hidden" name="_token" value="{{ csrf_token('delete' ~ plat.id) }}">
+                            <button class="text-red-400 hover:text-red-300 font-medium transition">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="4" class="p-8 text-center text-stone-500">No dishes found in database. Click "+ Add New Dish" to create your first item.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

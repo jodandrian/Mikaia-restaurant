@@ -1,0 +1,25 @@
+{% extends 'admin/base.html.twig' %}
+
+{% block title %}Dashboard — Mikaia Admin{% endblock %}
+
+{% block body %}
+<div class="space-y-6">
+    <h1 class="text-2xl font-serif font-bold text-white">Tableau de Bord</h1>
+
+    <!-- Cartes de statistiques -->
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div class="bg-[#18100a] border border-[#3b271c] rounded-2xl p-5">
+            <div class="text-xs uppercase text-stone-400">Commandes du jour</div>
+            <div class="text-3xl font-bold text-[#8CD62B] mt-2">12</div>
+        </div>
+        <div class="bg-[#18100a] border border-[#3b271c] rounded-2xl p-5">
+            <div class="text-xs uppercase text-stone-400">Recette estimée</div>
+            <div class="text-3xl font-bold text-white mt-2">180 000 Ar</div>
+        </div>
+        <div class="bg-[#18100a] border border-[#3b271c] rounded-2xl p-5">
+            <div class="text-xs uppercase text-stone-400">Plats au menu</div>
+            <div class="text-3xl font-bold text-white mt-2">24</div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,306 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mikaia — Commande en Ligne & Restaurant{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-[#110c09] text-stone-100 font-sans selection:bg-[#8CD62B] selection:text-stone-950">
+    
+    <!-- Navbar Transparente -->
+    <nav class="fixed top-0 left-0 w-full z-50 bg-gradient-to-b from-black/80 via-black/40 to-transparent backdrop-blur-xs transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 h-24 grid grid-cols-2 md:grid-cols-3 items-center">
+            
+            <!-- GAUCHE : Navigation principale -->
+            <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-stone-200">
+                <a href="#menu" class="hover:text-[#8CD62B] transition duration-200 drop-shadow">La Carte</a>
+                <a href="#concept" class="hover:text-[#8CD62B] transition duration-200 drop-shadow">Le Concept</a>
+            </div>
+
+            <!-- CENTRE : Logo -->
+            <div class="flex justify-start md:justify-center items-center">
+                <a href="#" class="flex items-center group py-1">
+                    <img src="{{ asset('images/Mikaia.svg') }}" alt="Mikaia Restaurant" class="h-16 md:h-20 w-auto object-contain transition-all duration-300 group-hover:scale-105 filter brightness-110 contrast-105 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
+                </a>
+            </div>
+
+            <!-- DROITE : Suivi de commande & Panier -->
+            <div class="flex items-center justify-end space-x-6">
+                <a href="#suivi" class="hidden md:inline-block text-sm font-medium text-stone-200 hover:text-[#8CD62B] transition duration-200 drop-shadow">Suivre ma commande</a>
+                
+                <button onclick="togglePanier()" class="relative bg-black/40 backdrop-blur-md border border-[#C88A4B]/50 hover:border-[#8CD62B] text-stone-200 px-5 py-2.5 rounded-full flex items-center gap-3 transition duration-300 shadow-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8CD62B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span class="text-sm font-medium hidden sm:inline">Panier</span>
+                    <span id="cart-count" class="bg-[#8CD62B] text-stone-950 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                </button>
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- Hero Section avec Carrousel d'images -->
+    <header class="relative min-h-[80vh] flex items-center justify-center overflow-hidden">
+        
+        <!-- Carrousel d'images en arrière-plan -->
+        <div id="hero-carousel" class="absolute inset-0 w-full h-full">
+            <div class="carousel-slide absolute inset-0 transition-opacity duration-1000 opacity-100 ease-in-out">
+                <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1600&q=80" class="w-full h-full object-cover" alt="Ambiance Restaurant Mikaia">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#110c09] via-[#110c09]/60 to-black/50"></div>
+            </div>
+            <div class="carousel-slide absolute inset-0 transition-opacity duration-1000 opacity-0 ease-in-out">
+                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1600&q=80" class="w-full h-full object-cover" alt="Plats Gastronomiques Mikaia">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#110c09] via-[#110c09]/60 to-black/50"></div>
+            </div>
+            <div class="carousel-slide absolute inset-0 transition-opacity duration-1000 opacity-0 ease-in-out">
+                <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1600&q=80" class="w-full h-full object-cover" alt="Grillades & Saveurs">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#110c09] via-[#110c09]/60 to-black/50"></div>
+            </div>
+        </div>
+
+        <!-- Contenu de présentation -->
+        <div class="relative z-10 max-w-4xl mx-auto text-center space-y-6 px-6 pt-24 pb-12">
+            <span class="inline-block py-1.5 px-5 rounded-full bg-[#8CD62B]/20 backdrop-blur-md border border-[#8CD62B]/40 text-[#8CD62B] text-xs tracking-widest uppercase font-semibold shadow-md">
+                L'art de recevoir, la saveur en héritage
+            </span>
+            <h1 class="text-4xl md:text-6xl font-serif font-bold tracking-tight text-white leading-tight drop-shadow-lg">
+                Commandez en ligne <br>et savourez <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#8CD62B] to-[#b3f75e]">chez vous</span>
+            </h1>
+            <p class="text-base md:text-lg text-stone-200 max-w-xl mx-auto font-light drop-shadow">
+                Choisissez vos plats préférés, personnalisez votre commande et faites-vous livrer ou préparez un à-emporter.
+            </p>
+        </div>
+
+        <!-- Contrôles du Carrousel (Flèches & Indicateurs) -->
+        <button onclick="prevSlide()" class="absolute left-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-[#8CD62B] hover:text-stone-950 text-white p-3 rounded-full backdrop-blur-md border border-white/10 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </button>
+        <button onclick="nextSlide()" class="absolute right-4 top-1/2 -translate-y-1/2 z-20 bg-black/30 hover:bg-[#8CD62B] hover:text-stone-950 text-white p-3 rounded-full backdrop-blur-md border border-white/10 transition">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </button>
+
+        <div class="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex space-x-2">
+            <button onclick="goToSlide(0)" class="dot-indicator w-3 h-3 rounded-full bg-[#8CD62B] transition-all duration-300"></button>
+            <button onclick="goToSlide(1)" class="dot-indicator w-3 h-3 rounded-full bg-white/40 transition-all duration-300"></button>
+            <button onclick="goToSlide(2)" class="dot-indicator w-3 h-3 rounded-full bg-white/40 transition-all duration-300"></button>
+        </div>
+
+    </header>
+
+    <!-- Section Principale : Carte & Commande -->
+    <main id="menu" class="max-w-7xl mx-auto py-16 px-6 grid grid-cols-1 lg:grid-cols-3 gap-12">
+        
+        <!-- Liste des Plats -->
+        <div class="lg:col-span-2 space-y-12">
+            <div class="flex justify-between items-center border-b border-[#3b271c] pb-4">
+                <h2 class="text-2xl md:text-3xl font-serif font-bold text-white">Notre Carte</h2>
+                <div class="flex gap-2 text-xs">
+                    <button class="bg-[#8CD62B] text-stone-950 font-semibold px-4 py-1.5 rounded-xl shadow-md">Tous</button>
+                    <button class="bg-[#1c130d] text-stone-300 hover:text-white px-4 py-1.5 rounded-xl border border-[#3b271c] transition">Plats</button>
+                    <button class="bg-[#1c130d] text-stone-300 hover:text-white px-4 py-1.5 rounded-xl border border-[#3b271c] transition">Boissons</button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {% for plat in plats %}
+                    <div class="group bg-[#1a120c]/90 border border-[#3b271c] rounded-2xl overflow-hidden hover:border-[#8CD62B]/50 transition-all duration-300 flex flex-col justify-between shadow-xl">
+                        <div class="h-48 bg-gradient-to-br from-[#29190e] to-[#110c09] relative flex items-center justify-center">
+                            <span class="absolute top-3 right-3 bg-[#110c09]/90 backdrop-blur-md border border-[#3b271c] text-[#8CD62B] text-xs font-medium px-3 py-1 rounded-full">
+                                {{ plat.badge }}
+                            </span>
+                            <span class="text-stone-400 font-serif text-sm">[ Visuel : {{ plat.nom }} ]</span>
+                        </div>
+                        
+                        <div class="p-6 space-y-4 flex-grow flex flex-col justify-between">
+                            <div>
+                                <div class="text-[10px] uppercase tracking-widest text-[#8CD62B] font-semibold">{{ plat.categorie }}</div>
+                                <div class="flex justify-between items-baseline mt-1">
+                                    <h3 class="text-lg font-serif font-bold text-white group-hover:text-[#8CD62B] transition">{{ plat.nom }}</h3>
+                                    <span class="text-[#8CD62B] font-bold text-base">{{ plat.prix }}</span>
+                                </div>
+                                <p class="text-stone-300 text-xs leading-relaxed font-light mt-2">{{ plat.desc }}</p>
+                            </div>
+                            
+                            <div class="pt-4 border-t border-[#3b271c]">
+                                <button onclick="ajouterAuPanier('{{ plat.nom }}', '{{ plat.prix }}')" class="w-full bg-[#26170d] hover:bg-[#8CD62B] hover:text-stone-950 text-stone-200 text-sm font-medium py-2.5 rounded-xl transition duration-300 flex items-center justify-center gap-2 shadow-inner">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Ajouter au panier
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Panier Latéral -->
+        <div class="lg:col-span-1">
+            <div class="sticky top-28 bg-[#18100a] border border-[#3b271c] rounded-3xl p-6 shadow-2xl space-y-6">
+                <div class="flex items-center justify-between border-b border-[#3b271c] pb-4">
+                    <h3 class="text-xl font-serif font-bold text-white flex items-center gap-2">
+                        <span>Votre Commande</span>
+                    </h3>
+                    <span class="text-xs text-stone-400" id="item-count">0 article</span>
+                </div>
+
+                <div id="cart-items" class="space-y-4 max-h-64 overflow-y-auto pr-1 text-sm text-stone-300">
+                    <p class="text-stone-500 text-center py-6 italic text-xs">Votre panier est vide pour le moment.</p>
+                </div>
+
+                <div class="border-t border-[#3b271c] pt-4 space-y-3">
+                    <div class="flex justify-between text-stone-400 text-sm">
+                        <span>Sous-total</span>
+                        <span id="subtotal">0.00 Ar</span>
+                    </div>
+                    <div class="flex justify-between text-stone-400 text-sm">
+                        <span>Frais de livraison</span>
+                        <span>5 000 Ar</span>
+                    </div>
+                    <div class="flex justify-between text-white font-bold text-lg pt-2 border-t border-[#3b271c]/50">
+                        <span>Total</span>
+                        <span id="total" class="text-[#8CD62B]">5 000 Ar</span>
+                    </div>
+                </div>
+
+                <form action="#" method="POST" class="space-y-4 pt-2">
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Mode de retrait</label>
+                        <select class="w-full bg-[#110c09] border border-[#3b271c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#8CD62B]">
+                            <option>Livraison à domicile</option>
+                            <option>À emporter (Click & Collect)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Adresse ou Téléphone</label>
+                        <input type="text" placeholder="Votre numéro ou adresse..." class="w-full bg-[#110c09] border border-[#3b271c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#8CD62B]">
+                    </div>
+                    <button type="submit" class="w-full bg-[#8CD62B] hover:bg-[#7bc220] text-stone-950 font-semibold py-3.5 rounded-xl transition shadow-lg shadow-[#8CD62B]/15 text-center block">
+                        Valider la commande
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Scripts Carrousel & Panier -->
+    <script>
+        // Logique du Carrousel
+        let currentSlide = 0;
+        const slides = document.querySelectorAll('.carousel-slide');
+        const indicators = document.querySelectorAll('.dot-indicator');
+        const totalSlides = slides.length;
+
+        function showSlide(index) {
+            slides.forEach((slide, i) => {
+                if (i === index) {
+                    slide.classList.remove('opacity-0');
+                    slide.classList.add('opacity-100');
+                } else {
+                    slide.classList.remove('opacity-100');
+                    slide.classList.add('opacity-0');
+                }
+            });
+
+            indicators.forEach((dot, i) => {
+                if (i === index) {
+                    dot.classList.remove('bg-white/40');
+                    dot.classList.add('bg-[#8CD62B]');
+                } else {
+                    dot.classList.remove('bg-[#8CD62B]');
+                    dot.classList.add('bg-white/40');
+                }
+            });
+
+            currentSlide = index;
+        }
+
+        function nextSlide() {
+            let next = (currentSlide + 1) % totalSlides;
+            showSlide(next);
+        }
+
+        function prevSlide() {
+            let prev = (currentSlide - 1 + totalSlides) % totalSlides;
+            showSlide(prev);
+        }
+
+        function goToSlide(index) {
+            showSlide(index);
+        }
+
+        // Auto-Play carrousel (toutes les 5 secondes)
+        setInterval(nextSlide, 5000);
+
+        // Logique du Panier
+        let cart = [];
+
+        function ajouterAuPanier(nom, prix) {
+            cart.push({ nom, prix: parseFloat(prix.replace(/[^0-9.-]+/g,"")) });
+            mettreAJourPanier();
+        }
+
+        function mettreAJourPanier() {
+            const container = document.getElementById('cart-items');
+            const countBadge = document.getElementById('cart-count');
+            const itemCount = document.getElementById('item-count');
+            const subtotalEl = document.getElementById('subtotal');
+            const totalEl = document.getElementById('total');
+
+            countBadge.innerText = cart.length;
+            itemCount.innerText = cart.length + (cart.length > 1 ? ' articles' : ' article');
+
+            if (cart.length === 0) {
+                container.innerHTML = '<p class="text-stone-500 text-center py-6 italic text-xs">Votre panier est vide pour le moment.</p>';
+                subtotalEl.innerText = '0.00 Ar';
+                totalEl.innerText = '5 000 Ar';
+                return;
+            }
+
+            container.innerHTML = '';
+            let subtotal = 0;
+
+            cart.forEach((item, index) => {
+                subtotal += item.prix;
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-[#110c09] p-3 rounded-xl border border-[#3b271c]">
+                        <div>
+                            <div class="font-medium text-white">${item.nom}</div>
+                            <div class="text-xs text-[#8CD62B]">${item.prix.toLocaleString()} Ar</div>
+                        </div>
+                        <button onclick="supprimerDuPanier(${index})" class="text-stone-500 hover:text-red-400 text-xs p-1">✕</button>
+                    </div>
+                `;
+            });
+
+            subtotalEl.innerText = subtotal.toLocaleString() + ' Ar';
+            totalEl.innerText = (subtotal + 5000).toLocaleString() + ' Ar';
+        }
+
+        function supprimerDuPanier(index) {
+            cart.splice(index, 1);
+            mettreAJourPanier();
+        }
+    </script>
+
+    <!-- Footer -->
+    <footer class="bg-[#170e0a] border-t border-[#3b271c] py-12 px-6 text-center text-stone-400 text-sm mt-20">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-6">
+            <div class="flex items-center">
+                <img src="{{ asset('images/Mikaia.svg') }}" alt="Mikaia Restaurant" class="h-12 w-auto object-contain filter brightness-110">
+            </div>
+            <p class="text-xs text-stone-400">&copy; 2026 Mikaia Restaurant. Tous droits réservés. L'art de recevoir, la saveur en héritage.</p>
+            <div class="flex space-x-6 text-stone-300 text-xs">
+                <a href="#" class="hover:text-[#8CD62B] transition">Instagram</a>
+                <a href="#" class="hover:text-[#8CD62B] transition">Facebook</a>
+                <a href="#" class="hover:text-[#8CD62B] transition">Contact</a>
+            </div>
+        </div>
+    </footer>
+</div>
+{% endblock %}

@@ -1,0 +1,76 @@
+<?php
+
+namespace App\Form;
+
+use App\Entity\Plat; // Entité associée au formulaire
+use Symfony\Component\Form\AbstractType; // Classe de base pour créer un formulaire
+use Symfony\Component\Form\Extension\Core\Type\IntegerType; // Type d'input HTML pour les entiers
+use Symfony\Component\Form\Extension\Core\Type\TextareaType; // Type d'input HTML <textarea>
+use Symfony\Component\Form\Extension\Core\Type\TextType; // Type d'input HTML text
+use Symfony\Component\Form\Extension\Core\Type\UrlType; // Type d'input HTML url avec validation
+use Symfony\Component\Form\FormBuilderInterface; // Interface permettant d'empiler les champs de formulaire
+use Symfony\Component\OptionsResolver\OptionsResolver; // Classe permettant de configurer la liaison de données
+use App\Entity\Category;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
+
+class PlatType extends AbstractType
+{
+    /**
+     * Builds the form layout and maps entity attributes to form controls.
+     */
+    public function buildForm(FormBuilderInterface $builder, array $options): void
+    {
+        // Classe CSS réutilisable pour garantir la cohérence UI avec Tailwind CSS
+        $cssInputStyle = 'w-full bg-[#18100a] border border-[#3b271c] rounded-xl px-4 py-2.5 text-white focus:outline-none focus:border-[#8CD62B] transition';
+
+        $builder
+            ->add('name', TextType::class, [ // Champ 'name' relié à $plat->setName()
+                'label' => 'Dish Title',
+                'attr' => ['class' => $cssInputStyle, 'placeholder' => 'Ex: Le Burger Signature Mikaia']
+            ])
+            // ->add('category', TextType::class, [ // Champ 'category' optionnel
+            //     'label' => 'Category',
+            //     'required' => false,
+            //     'attr' => ['class' => $cssInputStyle, 'placeholder' => 'Ex: Main Course, Starter']
+            // ])
+            // MENU DÉROULANT DE CATÉGORIES ICI ON A AJOUTER MANUELLEMENT LE NOM CAT DANS LA BASE
+            ->add('category', EntityType::class, [
+                'class' => Category::class,               // Entité liée
+                'choice_label' => 'nomCategory',          // Nom de la propriété à afficher dans la liste
+                'label' => 'Category',
+                'placeholder' => '-- Select a Category --',// Option par défaut
+                'required' => true,                       // Empêche d'envoyer une valeur nulle
+                'attr' => ['class' => $cssInputStyle]
+            ])
+            
+            ->add('price', IntegerType::class, [ // Champ 'price'
+                'label' => 'Price (Ariary)',
+                'attr' => ['class' => $cssInputStyle, 'placeholder' => 'Ex: 25000']
+            ])
+            ->add('badge', TextType::class, [ // Champ 'badge' optionnel
+                'label' => 'Promotional Badge',
+                'required' => false,
+                'attr' => ['class' => $cssInputStyle, 'placeholder' => 'Ex: Chef Special, Seasonal']
+            ])
+            ->add('imageUrl', UrlType::class, [ // Champ 'imageUrl' optionnel avec validation de syntaxe URL
+                'label' => 'Image URL',
+                'required' => false,
+                'attr' => ['class' => $cssInputStyle, 'placeholder' => 'https://images.unsplash.com/...']
+            ])
+            ->add('description', TextareaType::class, [ // Champ 'description'
+                'label' => 'Detailed Description',
+                'required' => false,
+                'attr' => ['class' => $cssInputStyle, 'rows' => 3, 'placeholder' => 'Ingredients, cooking methods...']
+            ]);
+    }
+
+    /**
+     * Binds this form architecture directly to the Plat entity data model.
+     */
+    public function configureOptions(OptionsResolver $resolver): void
+    {
+        $resolver->setDefaults([
+            'data_class' => Plat::class, // Spécifie quelle classe PHP doit recevoir les données soumises
+        ]);
+    }
+}

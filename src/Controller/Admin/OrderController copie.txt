@@ -1,0 +1,102 @@
+<?php
+
+namespace App\Controller\Front;
+
+use App\Entity\Order;
+use App\Entity\OrderItem;
+use App\Entity\Dish;
+use Doctrine\ORM\EntityManagerInterface;
+use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
+use Symfony\Component\HttpFoundation\JsonResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Routing\Attribute\Route;
+
+class OrderController extends AbstractController
+{
+    #[Route('/api/order/create', name: 'api_order_create', methods: ['POST'])]
+    public function create(Request $request, EntityManagerInterface $em): JsonResponse
+    {
+        $data = json_decode($request->getContent(), true);
+
+        // 1. Récupération séparée du nom du client et des infos d'adresse/téléphone
+        $customerName = isset($data['customerName']) ? trim($data['customerName']) : '';
+        $customerInfo = isset($data['customerInfo']) ? trim($data['customerInfo']) : '';
+
+        if (!$data || empty($data['items']) || empty($customerInfo)) {
+            return new JsonResponse(['message' => 'Informations client ou panier manquants.'], 400);
+        }
+
+        // 2. Création et initialisation de la commande principale
+        $order = new Order();
+        
+        // Si votre entité Order possède setCustomerName(), décommentez la ligne suivante :
+        // $order->setCustomerName($customerName);
+
+        // Concaténation explicite du nom + téléphone/adresse si vous n'avez qu'un seul champ customerInfo dans Order
+        $fullCustomerDetails = $customerName ? ($customerName . ' - ' . $customerInfo) : $customerInfo;
+        $order->setCustomerInfo($fullCustomerDetails);
+        
+        $deliveryMode = $data['deliveryMode'] ?? 'livraison';
+        $order->setDeliveryMode($deliveryMode);
+        
+        $order->setStatus('pending');
+        $order->setCreatedAt(new \DateTimeImmutable());
+
+        $subtotal = 0;
+
+        // 3. Parcours des plats envoyés depuis le panier Twig
+        foreach ($data['items'] as $item) {
+            if (empty($item['id']) || empty($item['quantity'])) {
+                continue;
+            }
+
+            // Recherche du plat correspondant dans la BDD
+            $dish = $em->getRepository(Dish::class)->find($item['id']);
+
+            if ($dish) {
+                $orderItem = new OrderItem();
+                $orderItem->setDish($dish);
+                
+                $quantity = max(1, (int)$item['quantity']);
+                $orderItem->setQuantity($quantity);
+                
+                // CORRECTION PRIX : Récupération du prix sous forme de chaîne compatible avec la colonne DECIMAL
+                $rawPrice = (string) $dish->getPrice(); 
+                
+                // Formatage strict sans espaces (ex: "15000.00")
+                $cleanPrice = str_replace(' ', '', $rawPrice);
+                
+                // On passe une chaîne à setPrice(string $price)
+                $orderItem->setPrice($cleanPrice); 
+                $orderItem->setOrderRef($order);
+
+                // Calcul mathématique du sous-total avec la valeur numérique
+                $subtotal += ((float) $cleanPrice * $quantity);
+
+                $em->persist($orderItem);
+            }
+        }
+
+        // Sécurité si aucun plat valide n'a été inséré
+        if ($subtotal === 0) {
+            return new JsonResponse(['message' => 'Aucun plat valide trouvé dans le panier.'], 400);
+        }
+
+        // 4. Calcul des frais de livraison
+        $isEmport = in_array($deliveryMode, ['emport', 'emporter']);
+        $deliveryFee = $isEmport ? 0 : 5000;
+
+        // CORRECTION TOTAL : Attribution du montant global à l'entité Order
+        $order->setTotalAmount($subtotal + $deliveryFee);
+
+        // 5. Sauvegarde définitive en BDD
+        $em->persist($order);
+        $em->flush();
+
+        return new JsonResponse([
+            'status' => 'success',
+            'message' => 'Commande enregistrée avec succès',
+            'orderId' => $order->getId()
+        ], 201);
+    }
+}

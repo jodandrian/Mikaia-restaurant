@@ -1,0 +1,552 @@
+{# On hérite du layout de base du site #}
+{% extends 'Front/base.html.twig' %}
+
+{# Définition du titre de la page dans l'onglet du navigateur #}
+{% block title %}Mikaia — Commande en Ligne & Restaurant{% endblock %}
+
+{# Contenu principal de la page #}
+{% block body %}
+
+    {# ===================================================================================== #}
+    {# 1. BANNIÈRE PRINCIPALE / CARROUSEL D'IMAGES                                           #}
+    {# ===================================================================================== #}
+    <header id="hero-section" class="relative h-[80vh] sm:h-[85vh] min-h-[500px] flex items-center justify-center overflow-hidden bg-[#110c09]">
+        
+        {# Conteneur des diapositives du carrousel #}
+        <div id="mikaia-carousel" class="absolute inset-0 w-full h-full">
+            {# Image 1 (visible par défaut avec opacity-100) #}
+            <div class="carousel-slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-100 z-10">
+                <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1920&q=80" alt="Grillade Signature" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#110c09] via-[#110c09]/60 to-black/70"></div>
+            </div>
+
+            {# Image 2 (cachée au départ avec opacity-0) #}
+            <div class="carousel-slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0 z-0">
+                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1920&q=80" alt="Gastronomie Mikaia" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#110c09] via-[#110c09]/60 to-black/70"></div>
+            </div>
+
+            {# Image 3 (cachée au départ avec opacity-0) #}
+            <div class="carousel-slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0 z-0">
+                <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1920&q=80" alt="Ambiance Restaurant" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#110c09] via-[#110c09]/60 to-black/70"></div>
+            </div>
+        </div>
+
+        {# Textes d'accroche par-dessus le carrousel #}
+        <div class="relative z-20 max-w-4xl mx-auto text-center space-y-4 sm:space-y-6 px-4 sm:px-6 pt-20 sm:pt-24">
+            {# Slogan Mikaia #}
+            <span class="inline-block py-1.5 px-4 sm:px-5 rounded-full bg-[#8CD62B]/20 backdrop-blur-md border border-[#8CD62B]/40 text-[#8CD62B] text-[10px] sm:text-xs tracking-widest uppercase font-semibold shadow-xl">
+                L'art de recevoir, la saveur en héritage
+            </span>
+
+            {# Titre principal h1 #}
+            <h1 class="text-3xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight text-white leading-tight drop-shadow-2xl">
+                Commandez en ligne <br class="hidden sm:block">et savourez <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#8CD62B] to-[#b3f75e]">chez vous</span>
+            </h1>
+
+            {# Description rapide #}
+            <p class="text-xs sm:text-base md:text-lg text-stone-200 max-w-xl mx-auto font-light drop-shadow px-2">
+                Choisissez vos plats préférés, personnalisez votre commande et faites-vous livrer ou optez pour le retrait en restaurant.
+            </p>
+
+            {# Bouton de défilement vers le menu #}
+            <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#menu" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#8CD62B] hover:bg-[#7bc220] text-stone-950 font-bold px-8 py-3.5 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8CD62B]/20">
+                    <span>Découvrir la Carte</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        {# Boutons de navigation du carrousel (Précédent / Suivant) #}
+        <button id="prevBtn" type="button" aria-label="Précédent" class="flex absolute left-2 sm:left-4 top-1/2 -translate-y-1/2 z-30 bg-black/40 hover:bg-[#8CD62B] hover:text-stone-950 text-white p-2.5 sm:p-3 rounded-full backdrop-blur-md border border-white/10 transition cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+
+        <button id="nextBtn" type="button" aria-label="Suivant" class="flex absolute right-2 sm:right-4 top-1/2 -translate-y-1/2 z-30 bg-black/40 hover:bg-[#8CD62B] hover:text-stone-950 text-white p-2.5 sm:p-3 rounded-full backdrop-blur-md border border-white/10 transition cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 sm:h-5 sm:w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+
+        {# Puces de navigation en bas du carrousel #}
+        <div id="carouselDots" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center space-x-2.5">
+            <button type="button" data-index="0" class="dot w-2.5 h-2.5 rounded-full bg-[#8CD62B] transition-all cursor-pointer"></button>
+            <button type="button" data-index="1" class="dot w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-white transition-all cursor-pointer"></button>
+            <button type="button" data-index="2" class="dot w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-white transition-all cursor-pointer"></button>
+        </div>
+    </header>
+
+    {# ===================================================================================== #}
+    {# 2. SECTION PRINCIPALE : MENU DES PLATS ET PANIER DE COMMANDE                          #}
+    {# ===================================================================================== #}
+    <main id="menu" class="max-w-7xl mx-auto py-12 sm:py-16 px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+        
+        {# COLONNE GAUCHE (2 tiers de largeur) : LISTE DES CATEGORIES ET PLATS #}
+        <div class="lg:col-span-2 space-y-8">
+            
+            {# En-tête du menu avec boutons de filtres #}
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#3b271c] pb-4 gap-4">
+                <h2 class="text-2xl sm:text-3xl font-serif font-bold text-white">Notre Carte</h2>
+                
+                {# Boutons dynamiques de filtre par catégorie #}
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 text-xs">
+                    <button type="button" data-filter="all" class="category-btn active bg-[#8CD62B] text-stone-950 font-semibold px-4 py-2 rounded-xl shadow-md whitespace-nowrap transition cursor-pointer">Tous</button>
+
+                    {# Boucle Twig sur la liste des catégories transmises par le contrôleur #}
+                    {% for category in categories|default([]) %}
+                        {% set catId = category.id ?? loop.index %}
+                        {% set catName = category.name ?? category.nomCategory ?? category.nom ?? 'Catégorie' %}
+                        <button type="button" data-filter="{{ catId }}" class="category-btn bg-[#1c130d] text-stone-300 hover:text-white px-4 py-2 rounded-xl border border-[#3b271c] transition whitespace-nowrap cursor-pointer">
+                            {{ catName }}
+                        </button>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            {# Grille d'affichage des cartes de plats #}
+            <div id="dishes-grid" class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+
+                {# Boucle Twig sur chaque plat transmis par Symfony #}
+                {% for dish in dishes|default([]) %}
+                    {# Extraction propre des variables du plat #}
+                    {% set dishCatId = dish.category.id ?? 'all' %}
+                    {% set dishCatName = dish.category.name ?? dish.category.nomCategory ?? dish.category.nom ?? 'Spécialité' %}
+                    {% set dishId = dish.id ?? loop.index %}
+                    {% set dishName = dish.name ?? dish.nom ?? 'Plat Mikaia' %}
+                    
+                    {# IMPORTANT : dishRawPrice extrait la valeur numérique pure du prix #}
+                    {% set dishRawPrice = dish.price ?? dish.prix ?? 0 %}
+                    {% set dishDesc = dish.description ?? '' %}
+                    {% set dishImg = dish.imageUrl ?? dish.image ?? null %}
+
+                    {# Carte HTML individuelle pour un plat #}
+                    <div class="dish-card group bg-[#1a120c]/90 border border-[#3b271c] rounded-2xl overflow-hidden hover:border-[#8CD62B]/50 transition-all duration-300 flex flex-col justify-between shadow-xl" data-category="{{ dishCatId }}">
+                        
+                        {# Zone Image du plat #}
+                        <div class="h-48 sm:h-52 relative overflow-hidden bg-stone-900">
+                            {% if dishImg %}
+                                <img src="{{ dishImg starts with 'http' ? dishImg : asset('uploads/images/' ~ dishImg) }}" 
+                                     alt="{{ dishName }}" 
+                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80" 
+                                     alt="{{ dishName }}" 
+                                     class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy">
+                            {% endif %}
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#1a120c] via-transparent to-transparent opacity-60"></div>
+                        </div>
+                        
+                        {# Zone Texte et Bouton d'ajout #}
+                        <div class="p-5 sm:p-6 space-y-4 flex-grow flex flex-col justify-between">
+                            <div>
+                                {# Nom de la catégorie #}
+                                <div class="text-[10px] uppercase tracking-widest text-[#8CD62B] font-semibold">
+                                    {{ dishCatName }}
+                                </div>
+
+                                {# Nom du plat et Prix affiché en MGA #}
+                                <div class="flex justify-between items-baseline mt-1 gap-2">
+                                    <h3 class="text-base sm:text-lg font-serif font-bold text-white group-hover:text-[#8CD62B] transition">
+                                        {{ dishName }}
+                                    </h3>
+                                    <span class="text-[#8CD62B] font-bold text-sm sm:text-base whitespace-nowrap">
+                                        {{ dishRawPrice|number_format(0, ',', ' ') }} Ar
+                                    </span>
+                                </div>
+
+                                {# Description du plat #}
+                                <p class="text-stone-300 text-xs leading-relaxed font-light mt-2 max-h-16 overflow-hidden">
+                                    {{ dishDesc }}
+                                </p>
+                            </div>
+                            
+                            {# Bouton d'ajout au panier #}
+                            <div class="pt-3 border-t border-[#3b271c]">
+                                {# CRUCIAL : data-price contient la valeur NUMÉRIQUE BRUTE sans espaces (ex: 15000) pour le calcul JS #}
+                                <button type="button"
+                                        data-id="{{ dishId }}"
+                                        data-name="{{ dishName|e('html_attr') }}" 
+                                        data-price="{{ dishRawPrice|number_format(0, '', '') }}" 
+                                        class="btn-add-to-cart w-full bg-[#26170d] hover:bg-[#8CD62B] hover:text-stone-950 text-stone-200 text-xs sm:text-sm font-medium py-2.5 rounded-xl transition duration-300 flex items-center justify-center gap-2 shadow-inner cursor-pointer active:scale-95">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    <span class="btn-text">Ajouter au panier</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                {% else %}
+                    {# Message s'il n'y a aucun plat dans la BDD #}
+                    <div class="col-span-full text-center py-12 text-stone-400 italic">
+                        Aucun plat disponible pour le moment.
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        {# COLONNE DROITE (1 tier) : PANIER D'ACHAT FIXE #}
+        <div class="hidden lg:block lg:col-span-1">
+            <div id="desktop-cart" class="sticky top-28 bg-[#18100a] border border-[#3b271c] rounded-3xl p-6 shadow-2xl space-y-6">
+                
+                {# En-tête du panier #}
+                <div class="flex items-center justify-between border-b border-[#3b271c] pb-4">
+                    <h3 class="text-xl font-serif font-bold text-white flex items-center gap-2">
+                        <span>🛒 Votre Commande</span>
+                    </h3>
+                    <span id="item-count-text" class="text-xs text-stone-400">0 article</span>
+                </div>
+                
+                {# Conteneur dynamique où JavaScript génère les lignes d'articles #}
+                <div id="cart-items-container" class="space-y-3 max-h-64 overflow-y-auto pr-1 text-sm text-stone-300">
+                    <p class="text-stone-500 text-center py-6 italic text-xs">Votre panier est vide pour le moment.</p>
+                </div>
+
+                {# Zone de calcul des totaux #}
+                <div class="border-t border-[#3b271c] pt-4 space-y-3">
+                    <div class="flex justify-between text-stone-400 text-sm">
+                        <span>Sous-total</span>
+                        <span class="subtotal-text">0 Ar</span>
+                    </div>
+                    <div class="flex justify-between text-stone-400 text-sm">
+                        <span>Frais de livraison</span>
+                        <span class="delivery-text">0 Ar</span>
+                    </div>
+                    <div class="flex justify-between text-white font-bold text-lg pt-2 border-t border-[#3b271c]/50">
+                        <span>Total</span>
+                        <span class="total-text text-[#8CD62B]">0 Ar</span>
+                    </div>
+                </div>
+
+                {# FORMULAIRE DE SOUMISSION DE LA COMMANDE #}
+                <form id="checkout-form" class="space-y-4 pt-2">
+                    {# Champ 1 : Nom complet du client (Ajouté pour la gestion admin) #}
+                    <div>
+                        <label for="customer-name" class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Nom complet du client</label>
+                        <input type="text" id="customer-name" required placeholder="Ex: Jean Rabe" class="w-full bg-[#110c09] border border-[#3b271c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#8CD62B]">
+                    </div>
+
+                    {# Champ 2 : Choix du Mode de retrait #}
+                    <div>
+                        <label for="delivery-mode" class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Mode de retrait</label>
+                        <select id="delivery-mode" class="w-full bg-[#110c09] border border-[#3b271c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#8CD62B]">
+                            <option value="livraison">Livraison à domicile (+5 000 Ar)</option>
+                            <option value="emporter">À emporter (Click & Collect - Gratuit)</option>
+                        </select>
+                    </div>
+
+                    {# Champ 3 : Numéro de téléphone / Adresse / Table #}
+                    <div>
+                        <label for="customer-info" class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Téléphone & Adresse / Table</label>
+                        <input type="text" id="customer-info" required placeholder="Ex: 034 00 000 00 / Analakely ou Table 4" class="w-full bg-[#110c09] border border-[#3b271c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#8CD62B]">
+                    </div>
+
+                    {# Bouton d'envoi final du formulaire #}
+                    <button type="submit" class="w-full bg-[#8CD62B] hover:bg-[#7bc220] text-stone-950 font-semibold py-3.5 rounded-xl transition shadow-lg shadow-[#8CD62B]/15 text-center cursor-pointer">
+                        Valider la commande
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    {# BARRE FLOTTANTE PANIER POUR MOBILE #}
+    <div id="mobile-cart-bar" class="lg:hidden fixed bottom-4 left-4 right-4 z-40 bg-[#18100a] border border-[#8CD62B]/40 shadow-2xl rounded-2xl p-4 flex items-center justify-between text-white backdrop-blur-lg">
+        <div>
+            <p class="text-xs text-stone-400"><span id="mobile-item-count">0</span> article(s)</p>
+            <p class="text-base font-bold text-[#8CD62B] total-text">0 Ar</p>
+        </div>
+        <a href="#menu" id="mobile-scroll-cart" class="bg-[#8CD62B] text-stone-950 font-bold px-5 py-2.5 rounded-xl text-xs flex items-center gap-1.5 shadow-md">
+            <span>Voir la commande</span>
+        </a>
+    </div>
+
+    {# POPUP NOTIFICATION TOAST (Ajout au panier) #}
+    <div id="toast-notification" class="fixed top-6 right-6 z-50 transform -translate-y-32 opacity-0 transition-all duration-300 bg-[#8CD62B] text-stone-950 font-bold px-5 py-3 rounded-2xl shadow-2xl flex items-center gap-2 text-sm pointer-events-none">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        <span id="toast-message">Plat ajouté au panier !</span>
+    </div>
+
+{% endblock %}
+
+{% block javascripts %}
+<script>
+// Encapsulation de la logique JavaScript dans une fonction auto-invoquée (IIFE)
+(function() {
+    'use strict';
+
+    // 1. DÉCLARATION DES VARIABLES GLOBALES ET CONSTANTES
+    let cart = []; // Stocke la liste des articles présents dans le panier
+    const DELIVERY_FEE = 5000; // Montant fixe des frais de livraison en Ariary
+
+    // 2. FONCTION POUR ENREGISTRER LE PANIER DANS LE NAVIGATEUR (LOCALSTORAGE)
+    function saveCart() {
+        try { 
+            localStorage.setItem('mikaia_cart', JSON.stringify(cart)); 
+        } catch (e) {
+            // Ignorer si le navigateur bloque le localStorage
+        }
+    }
+
+    // 3. FONCTION POUR RECUPERER LE PANIER STOCKÉ
+    function loadCart() {
+        try {
+            const saved = localStorage.getItem('mikaia_cart');
+            cart = saved ? JSON.parse(saved) : [];
+        } catch (e) {
+            cart = [];
+        }
+    }
+
+    // 4. FONCTION POUR AFFICHER LA NOTIFICATION TOAST
+    function showToast(message) {
+        const toast = document.getElementById('toast-notification');
+        const msgEl = document.getElementById('toast-message');
+        if (!toast || !msgEl) return;
+
+        msgEl.innerText = message;
+        toast.classList.remove('-translate-y-32', 'opacity-0');
+        toast.classList.add('translate-y-0', 'opacity-100');
+
+        setTimeout(() => {
+            toast.classList.remove('translate-y-0', 'opacity-100');
+            toast.classList.add('-translate-y-32', 'opacity-0');
+        }, 2200);
+    }
+
+    // 5. FONCTION DU CALCUL DES TOTAUX
+    function calculateTotals() {
+        const subtotal = cart.reduce((acc, item) => {
+            const price = Number(item.price) || 0;
+            const qty = Number(item.quantity) || 0;
+            return acc + (price * qty);
+        }, 0);
+        
+        const deliverySelect = document.getElementById('delivery-mode');
+        const deliveryMode = deliverySelect ? deliverySelect.value : 'livraison';
+        
+        const fee = (deliveryMode === 'emporter' || cart.length === 0) ? 0 : DELIVERY_FEE;
+        const total = subtotal + fee;
+
+        const formatMoney = (amount) => amount.toLocaleString('fr-FR') + ' Ar';
+
+        document.querySelectorAll('.subtotal-text').forEach(el => el.innerText = formatMoney(subtotal));
+        document.querySelectorAll('.delivery-text').forEach(el => el.innerText = formatMoney(fee));
+        document.querySelectorAll('.total-text').forEach(el => el.innerText = formatMoney(total));
+
+        return { subtotal, fee, total };
+    }
+
+    // 6. MET À JOUR LE RENDU DE L'INTERFACE UTILISATEUR DU PANIER
+    function updateCartDOM() {
+        const container = document.getElementById('cart-items-container');
+        const countText = document.getElementById('item-count-text');
+        const mobileCountText = document.getElementById('mobile-item-count');
+        
+        const totalItems = cart.reduce((acc, item) => acc + (Number(item.quantity) || 0), 0);
+        
+        if (countText) countText.innerText = totalItems + (totalItems > 1 ? ' articles' : ' article');
+        if (mobileCountText) mobileCountText.innerText = totalItems;
+
+        if (!container) return;
+
+        if (cart.length === 0) {
+            container.innerHTML = `<p class="text-stone-500 text-center py-6 italic text-xs">Votre panier est vide pour le moment.</p>`;
+            calculateTotals();
+            return;
+        }
+
+        container.innerHTML = cart.map(item => {
+            const itemPrice = Number(item.price) || 0;
+            const itemQty = Number(item.quantity) || 0;
+            const itemTotal = itemPrice * itemQty;
+
+            return `
+                <div class="flex items-center justify-between bg-[#110c09] p-3 rounded-xl border border-[#3b271c] transition hover:border-[#8CD62B]/30">
+                    <div class="flex-1 pr-2">
+                        <p class="font-semibold text-white text-xs">${item.name}</p>
+                        <p class="text-[10px] text-[#8CD62B]">${itemTotal.toLocaleString('fr-FR')} Ar</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button type="button" data-action="decrease" data-id="${item.id}" class="w-6 h-6 bg-[#26170d] hover:bg-[#8CD62B] hover:text-black rounded-lg flex items-center justify-center text-xs text-white transition cursor-pointer font-bold">-</button>
+                        <span class="text-xs font-bold text-white w-4 text-center">${itemQty}</span>
+                        <button type="button" data-action="increase" data-id="${item.id}" class="w-6 h-6 bg-[#26170d] hover:bg-[#8CD62B] hover:text-[#110c09] rounded-lg flex items-center justify-center text-xs text-white transition cursor-pointer font-bold">+</button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+        calculateTotals();
+    }
+
+    // 7. INITIALISATION ET GESTION DES ÉVÉNEMENTS
+    function initScript() {
+        loadCart();
+        updateCartDOM();
+
+        // GESTIONNAIRE GLOBAL DE CLICS
+        document.addEventListener('click', (e) => {
+            // A. CLIC SUR LE BOUTON "AJOUTER AU PANIER"
+            const addBtn = e.target.closest('.btn-add-to-cart');
+            if (addBtn) {
+                e.preventDefault();
+                const id = String(addBtn.getAttribute('data-id'));
+                const name = addBtn.getAttribute('data-name');
+                const rawPrice = addBtn.getAttribute('data-price');
+                const price = Number(String(rawPrice).replace(/[^0-9.]/g, '')) || 0;
+
+                const item = cart.find(i => String(i.id) === id);
+                if (item) {
+                    item.quantity = (Number(item.quantity) || 0) + 1;
+                } else {
+                    cart.push({ id, name, price, quantity: 1 });
+                }
+                
+                saveCart();
+                updateCartDOM();
+                showToast(`"${name}" ajouté au panier !`);
+                return;
+            }
+
+            // B. CLIC SUR LES BOUTONS QUANTITÉ (+ / -)
+            const qtyBtn = e.target.closest('button[data-action]');
+            if (qtyBtn) {
+                e.preventDefault();
+                const action = qtyBtn.getAttribute('data-action');
+                const id = String(qtyBtn.getAttribute('data-id'));
+                const item = cart.find(i => String(i.id) === id);
+
+                if (item) {
+                    if (action === 'increase') item.quantity = (Number(item.quantity) || 0) + 1;
+                    if (action === 'decrease') item.quantity = (Number(item.quantity) || 0) - 1;
+                    
+                    if (item.quantity <= 0) {
+                        cart = cart.filter(i => String(i.id) !== id);
+                    }
+                    saveCart();
+                    updateCartDOM();
+                }
+                return;
+            }
+
+            // C. FILTRAGE DES CATEGORIES
+            const filterBtn = e.target.closest('.category-btn');
+            if (filterBtn) {
+                e.preventDefault();
+                const filter = String(filterBtn.getAttribute('data-filter'));
+
+                document.querySelectorAll('.category-btn').forEach(b => {
+                    b.classList.remove('bg-[#8CD62B]', 'text-stone-950', 'font-semibold');
+                    b.classList.add('bg-[#1c130d]', 'text-stone-300');
+                });
+                filterBtn.classList.remove('bg-[#1c130d]', 'text-stone-300');
+                filterBtn.classList.add('bg-[#8CD62B]', 'text-stone-950', 'font-semibold');
+
+                document.querySelectorAll('.dish-card').forEach(card => {
+                    const cardCat = String(card.getAttribute('data-category'));
+                    if (filter === 'all' || cardCat === filter) {
+                        card.style.display = 'flex';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                });
+            }
+        });
+
+        // RECALCUL DES TOTAUX QUAND LE MODE DE RETRAIT CHANGE
+        const deliveryModeSelect = document.getElementById('delivery-mode');
+        if (deliveryModeSelect) {
+            deliveryModeSelect.addEventListener('change', calculateTotals);
+        }
+
+        // 8. ENVOI DU FORMULAIRE DE COMMANDE VIA AJAX VERS LE BACKEND SYMFONY
+        const checkoutForm = document.getElementById('checkout-form');
+        if (checkoutForm) {
+            checkoutForm.addEventListener('submit', (e) => {
+                e.preventDefault();
+
+                if (cart.length === 0) {
+                    alert('Votre panier est vide ! Veuillez ajouter au moins un plat.');
+                    return;
+                }
+
+                // Extraction avec les bons IDs HTML (customer-name et customer-info)
+                const nameInput = document.getElementById('customer-name');
+                const infoInput = document.getElementById('customer-info');
+
+                const customerName = nameInput ? nameInput.value.trim() : '';
+                const customerInfo = infoInput ? infoInput.value.trim() : '';
+
+                if (!customerName || !customerInfo) {
+                    alert('Veuillez remplir votre nom ainsi que votre numéro de téléphone / adresse.');
+                    return;
+                }
+
+                const totals = calculateTotals();
+                const rawDelivery = deliveryModeSelect ? deliveryModeSelect.value : 'livraison';
+                const deliveryMode = (rawDelivery === 'emporter') ? 'emport' : rawDelivery;
+
+                // Payload correctement structuré
+                const payload = {
+                    customerName: customerName,
+                    customerInfo: customerInfo,
+                    deliveryMode: deliveryMode,
+                    totalAmount: totals.total,
+                    subtotalAmount: totals.subtotal,
+                    shippingFee: totals.fee,
+                    items: cart.map(item => ({
+                        id: parseInt(item.id, 10),
+                        name: item.name,
+                        quantity: parseInt(item.quantity, 10),
+                        price: parseFloat(item.price),
+                        total: parseFloat(item.price) * parseInt(item.quantity, 10)
+                    }))
+                };
+
+                // Exécution de la requête POST
+                fetch('/api/order/create', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    body: JSON.stringify(payload)
+                })
+                .then(async response => {
+                    const data = await response.json();
+                    if (!response.ok) {
+                        throw new Error(data.message || 'Erreur lors de l\'enregistrement de la commande.');
+                    }
+                    return data;
+                })
+                .then(data => {
+                    alert(`✅ Commande N°${data.orderId || 'enregistrée'} transmise avec succès !`);
+                    
+                    // Réinitialisation du panier et des inputs
+                    cart = [];
+                    saveCart();
+                    updateCartDOM();
+                    if (nameInput) nameInput.value = '';
+                    if (infoInput) infoInput.value = '';
+                })
+                .catch(error => {
+                    console.error('Erreur API:', error);
+                    alert('❌ Erreur : ' + error.message);
+                });
+            });
+        }
+    }
+
+    // Démarrage une fois le DOM chargé
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', initScript);
+    } else {
+        initScript();
+    }
+})();
+</script>
+{% endblock %}

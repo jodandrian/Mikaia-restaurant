@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <title>Menu & Commande — Mikaia Restaurant</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#110c09] text-stone-200 min-h-screen">
+
+    <!-- Header / Navigation -->
+    <header class="border-b border-[#3b271c] bg-[#18100a] sticky top-0 z-50">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex items-center justify-between">
+            <h1 class="text-xl font-serif font-bold text-[#8CD62B]">Mikaia Restaurant</h1>
+            <span class="text-xs text-stone-400">L'art de recevoir, la saveur en héritage</span>
+        </div>
+    </header>
+
+    <main class="max-w-6xl mx-auto px-4 py-8">
+        
+        {% for message in app.flashes('success') %}
+            <div class="mb-6 p-4 bg-[#8CD62B]/20 border border-[#8CD62B] text-[#8CD62B] rounded-xl font-semibold text-sm text-center">
+                {{ message }}
+            </div>
+        {% endfor %}
+
+        <div class="text-center mb-10">
+            <h2 class="text-3xl font-serif font-bold text-white mb-2">Notre Carte & Spécialités</h2>
+            <p class="text-stone-400 text-sm">Commandez directement depuis votre table en un clic.</p>
+        </div>
+
+        <!-- Grille des plats -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            {% for dish in dishes %}
+                <div class="bg-[#18100a] border border-[#3b271c] rounded-2xl overflow-hidden shadow-lg flex flex-col justify-between">
+                    <div>
+                        {% if dish.imageUrl %}
+                            <img src="{{ dish.imageUrl }}" alt="{{ dish.name }}" class="w-full h-48 object-cover">
+                        {% endif %}
+                        <div class="p-5">
+                            <div class="flex items-center justify-between mb-2">
+                                <h3 class="font-serif font-bold text-lg text-white">{{ dish.name }}</h3>
+                                <span class="text-[#8CD62B] font-bold text-sm">{{ dish.price|number_format(0, '', ' ') }} Ar</span>
+                            </div>
+                            <p class="text-xs text-stone-400 line-clamp-2 mb-4">{{ dish.description }}</p>
+                        </div>
+                    </div>
+
+                    <!-- Formulaire de commande directe pour ce plat -->
+                    <div class="p-5 pt-0 border-t border-[#2d1e15]">
+                        <form method="post" action="{{ path('app_front_order_place') }}" class="space-y-3 mt-4">
+                            <input type="hidden" name="dish_id" value="{{ dish.id }}">
+
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="text" name="customer_name" placeholder="Votre Nom" required class="bg-[#110c09] border border-[#3b271c] rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#8CD62B]">
+                                <input type="text" name="table_number" placeholder="N° Table / Tél" required class="bg-[#110c09] border border-[#3b271c] rounded-lg px-3 py-1.5 text-xs text-white focus:outline-none focus:border-[#8CD62B]">
+                            </div>
+
+                            <div class="flex items-center gap-2">
+                                <select name="quantity" class="bg-[#110c09] border border-[#3b271c] text-white rounded-lg px-2 py-2 text-xs">
+                                    <option value="1">1 Qté</option>
+                                    <option value="2">2 Qté</option>
+                                    <option value="3">3 Qté</option>
+                                </select>
+                                <button type="submit" class="w-full bg-[#8CD62B] text-black font-bold text-xs py-2 rounded-lg hover:bg-opacity-90 transition">
+                                    Commander Maintenant
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            {% else %}
+                <p class="col-span-3 text-center text-stone-500 py-12">Aucun plat n'est disponible sur la carte pour le moment.</p>
+            {% endfor %}
+        </div>
+    </main>
+</body>
+</html>

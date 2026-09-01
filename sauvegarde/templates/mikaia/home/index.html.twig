@@ -1,0 +1,439 @@
+{% extends 'base.html.twig' %}
+
+{% block title %}Mikaia — Commande en Ligne & Restaurant{% endblock %}
+
+{% block body %}
+<div class="min-h-screen bg-[#110c09] text-stone-100 font-sans selection:bg-[#8CD62B] selection:text-stone-950">
+    
+    <!-- Navbar Transparente -->
+    <nav class="fixed top-0 left-0 w-full z-50 bg-gradient-to-b from-black/90 via-black/50 to-transparent backdrop-blur-sm transition-all duration-300">
+        <div class="max-w-7xl mx-auto px-6 h-24 grid grid-cols-2 md:grid-cols-3 items-center">
+            
+            <!-- GAUCHE : Navigation -->
+            <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-stone-200">
+                <a href="#menu" class="hover:text-[#8CD62B] transition duration-200 drop-shadow">La Carte</a>
+                <a href="#concept" class="hover:text-[#8CD62B] transition duration-200 drop-shadow">Le Concept</a>
+            </div>
+
+            <!-- CENTRE : Logo -->
+            <div class="flex justify-start md:justify-center items-center">
+                <a href="#" class="flex items-center group py-1">
+                    <img src="{{ asset('images/Mikaia.svg') }}" alt="Mikaia Restaurant" class="h-16 md:h-20 w-auto object-contain transition-all duration-300 group-hover:scale-105 filter brightness-110 contrast-105 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
+                </a>
+            </div>
+
+            <!-- DROITE : Suivi & Panier -->
+            <div class="flex items-center justify-end space-x-6">
+                <a href="#suivi" class="hidden md:inline-block text-sm font-medium text-stone-200 hover:text-[#8CD62B] transition duration-200 drop-shadow">Suivre ma commande</a>
+                
+                <button onclick="togglePanier()" class="relative bg-black/40 backdrop-blur-md border border-[#C88A4B]/50 hover:border-[#8CD62B] text-stone-200 px-5 py-2.5 rounded-full flex items-center gap-3 transition duration-300 shadow-lg cursor-pointer">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8CD62B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                    </svg>
+                    <span class="text-sm font-medium hidden sm:inline">Panier</span>
+                    <span id="cart-count" class="bg-[#8CD62B] text-stone-950 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                </button>
+            </div>
+
+        </div>
+    </nav>
+
+    <!-- Hero Section avec Carrousel Culinaires Immersif -->
+    <header id="hero-section" class="relative h-[85vh] min-h-[580px] flex items-center justify-center overflow-hidden bg-[#110c09]">
+        
+        <!-- Carrousel d'Images -->
+        <div id="mikaia-carousel" class="absolute inset-0 w-full h-full">
+            <div class="carousel-slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-100 z-10">
+                <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1920&q=80" alt="Grillade Signature" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#110c09] via-[#110c09]/50 to-black/60"></div>
+            </div>
+            <div class="carousel-slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0 z-0">
+                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1920&q=80" alt="Gastronomie Mikaia" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#110c09] via-[#110c09]/50 to-black/60"></div>
+            </div>
+            <div class="carousel-slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0 z-0">
+                <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1920&q=80" alt="Ambiance Restaurant" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#110c09] via-[#110c09]/50 to-black/60"></div>
+            </div>
+        </div>
+
+        <!-- Contenu Central Hero -->
+        <div class="relative z-20 max-w-4xl mx-auto text-center space-y-6 px-6 pt-20">
+            <span class="inline-block py-1.5 px-5 rounded-full bg-[#8CD62B]/20 backdrop-blur-md border border-[#8CD62B]/40 text-[#8CD62B] text-xs tracking-widest uppercase font-semibold shadow-xl">
+                L'art de recevoir, la saveur en héritage
+            </span>
+            <h1 class="text-4xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight text-white leading-tight drop-shadow-2xl">
+                Commandez en ligne <br>et savourez <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#8CD62B] to-[#b3f75e]">chez vous</span>
+            </h1>
+            <p class="text-base md:text-lg text-stone-200 max-w-xl mx-auto font-light drop-shadow">
+                Choisissez vos plats préférés, personnalisez votre commande et faites-vous livrer ou préparez un à-emporter.
+            </p>
+            <div class="pt-2">
+                <a href="#menu" class="inline-flex items-center gap-2 bg-[#8CD62B] hover:bg-[#7bc220] text-stone-950 font-bold px-8 py-3.5 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8CD62B]/20">
+                    <span>Découvrir la Carte</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        <!-- Boutons Flèches -->
+        <button id="prevBtn" aria-label="Précédent" class="absolute left-4 sm:left-8 top-1/2 -translate-y-1/2 z-30 bg-black/40 hover:bg-[#8CD62B] hover:text-stone-950 text-white p-3.5 rounded-full backdrop-blur-md border border-white/10 transition-all duration-300 cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+            </svg>
+        </button>
+        <button id="nextBtn" aria-label="Suivant" class="absolute right-4 sm:right-8 top-1/2 -translate-y-1/2 z-30 bg-black/40 hover:bg-[#8CD62B] hover:text-stone-950 text-white p-3.5 rounded-full backdrop-blur-md border border-white/10 transition-all duration-300 cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+            </svg>
+        </button>
+
+        <!-- Indicateurs (Dots) -->
+        <div id="carouselDots" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center space-x-3">
+            <button data-index="0" class="dot w-3 h-3 rounded-full bg-[#8CD62B] transition-all duration-300 cursor-pointer"></button>
+            <button data-index="1" class="dot w-3 h-3 rounded-full bg-white/40 hover:bg-white transition-all duration-300 cursor-pointer"></button>
+            <button data-index="2" class="dot w-3 h-3 rounded-full bg-white/40 hover:bg-white transition-all duration-300 cursor-pointer"></button>
+        </div>
+    </header>
+
+    <!-- Section Principale : Carte & Commande -->
+    <main id="menu" class="max-w-7xl mx-auto py-16 px-6 grid grid-cols-1 lg:grid-cols-3 gap-12">
+        
+        <!-- Liste des Plats -->
+        <div class="lg:col-span-2 space-y-12">
+            <div class="flex justify-between items-center border-b border-[#3b271c] pb-4">
+                <h2 class="text-2xl md:text-3xl font-serif font-bold text-white">Notre Carte</h2>
+                <div class="flex gap-2 text-xs">
+                    <button class="bg-[#8CD62B] text-stone-950 font-semibold px-4 py-1.5 rounded-xl shadow-md">Tous</button>
+                    <button class="bg-[#1c130d] text-stone-300 hover:text-white px-4 py-1.5 rounded-xl border border-[#3b271c] transition">Plats</button>
+                    <button class="bg-[#1c130d] text-stone-300 hover:text-white px-4 py-1.5 rounded-xl border border-[#3b271c] transition">Boissons</button>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                {% for plat in plats|default([]) %}
+                    <div class="group bg-[#1a120c]/90 border border-[#3b271c] rounded-2xl overflow-hidden hover:border-[#8CD62B]/50 transition-all duration-300 flex flex-col justify-between shadow-xl">
+                        
+                        <!-- Image du Plat -->
+                        <div class="h-52 relative overflow-hidden bg-stone-900">
+                            <img src="{{ plat.image }}" alt="{{ plat.nom }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#1a120c] via-transparent to-transparent opacity-60"></div>
+                            {% if plat.badge is defined and plat.badge %}
+                                <span class="absolute top-3 right-3 bg-[#110c09]/90 backdrop-blur-md border border-[#3b271c] text-[#8CD62B] text-xs font-medium px-3 py-1 rounded-full shadow-md">
+                                    {{ plat.badge }}
+                                </span>
+                            {% endif %}
+                        </div>
+                        
+                        <!-- Détails du Plat -->
+                        <div class="p-6 space-y-4 flex-grow flex flex-col justify-between">
+                            <div>
+                                <div class="text-[10px] uppercase tracking-widest text-[#8CD62B] font-semibold">{{ plat.categorie }}</div>
+                                <div class="flex justify-between items-baseline mt-1">
+                                    <h3 class="text-lg font-serif font-bold text-white group-hover:text-[#8CD62B] transition">{{ plat.nom }}</h3>
+                                    <span class="text-[#8CD62B] font-bold text-base whitespace-nowrap ml-2">{{ plat.prix }}</span>
+                                </div>
+                                <p class="text-stone-300 text-xs leading-relaxed font-light mt-2">{{ plat.desc }}</p>
+                            </div>
+                            
+                            <div class="pt-4 border-t border-[#3b271c]">
+                                <button onclick="ajouterAuPanier('{{ plat.nom }}', '{{ plat.prix }}')" class="w-full bg-[#26170d] hover:bg-[#8CD62B] hover:text-stone-950 text-stone-200 text-sm font-medium py-2.5 rounded-xl transition duration-300 flex items-center justify-center gap-2 shadow-inner cursor-pointer">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Ajouter au panier
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {% else %}
+                    <div class="col-span-full text-center py-12 text-stone-400 italic">
+                        Aucun plat n'est disponible pour le moment.
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Panier Latéral -->
+        <div class="lg:col-span-1">
+            <div id="panier-section" class="sticky top-28 bg-[#18100a] border border-[#3b271c] rounded-3xl p-6 shadow-2xl space-y-6">
+                <div class="flex items-center justify-between border-b border-[#3b271c] pb-4">
+                    <h3 class="text-xl font-serif font-bold text-white flex items-center gap-2">
+                        <span>Votre Commande</span>
+                    </h3>
+                    <span class="text-xs text-stone-400" id="item-count">0 article</span>
+                </div>
+
+                <div id="cart-items" class="space-y-3 max-h-64 overflow-y-auto pr-1 text-sm text-stone-300">
+                    <p class="text-stone-500 text-center py-6 italic text-xs">Votre panier est vide pour le moment.</p>
+                </div>
+
+                <div class="border-t border-[#3b271c] pt-4 space-y-3">
+                    <div class="flex justify-between text-stone-400 text-sm">
+                        <span>Sous-total</span>
+                        <span id="subtotal">0 Ar</span>
+                    </div>
+                    <div class="flex justify-between text-stone-400 text-sm">
+                        <span>Frais de livraison</span>
+                        <span>5 000 Ar</span>
+                    </div>
+                    <div class="flex justify-between text-white font-bold text-lg pt-2 border-t border-[#3b271c]/50">
+                        <span>Total</span>
+                        <span id="total" class="text-[#8CD62B]">5 000 Ar</span>
+                    </div>
+                </div>
+
+                <form action="#" method="POST" class="space-y-4 pt-2">
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Mode de retrait</label>
+                        <select class="w-full bg-[#110c09] border border-[#3b271c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#8CD62B]">
+                            <option>Livraison à domicile</option>
+                            <option>À emporter (Click & Collect)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Adresse ou Téléphone</label>
+                        <input type="text" placeholder="Votre numéro ou adresse..." class="w-full bg-[#110c09] border border-[#3b271c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#8CD62B]">
+                    </div>
+                    <button type="submit" class="w-full bg-[#8CD62B] hover:bg-[#7bc220] text-stone-950 font-semibold py-3.5 rounded-xl transition shadow-lg shadow-[#8CD62B]/15 text-center block cursor-pointer">
+                        Valider la commande
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+
+    <!-- Scripts JavaScript (Carrousel & Panier) -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- CARROUSEL ---
+            const slides = document.querySelectorAll('.carousel-slide');
+            const dots = document.querySelectorAll('#carouselDots .dot');
+            const prevBtn = document.getElementById('prevBtn');
+            const nextBtn = document.getElementById('nextBtn');
+            const container = document.getElementById('hero-section');
+            
+            let currentIndex = 0;
+            let slideInterval = null;
+
+            function goToSlide(index) {
+                if (slides.length === 0) return;
+                slides[currentIndex].classList.replace('opacity-100', 'opacity-0');
+                slides[currentIndex].classList.replace('z-10', 'z-0');
+                dots[currentIndex].classList.replace('bg-[#8CD62B]', 'bg-white/40');
+
+                currentIndex = (index + slides.length) % slides.length;
+
+                slides[currentIndex].classList.replace('opacity-0', 'opacity-100');
+                slides[currentIndex].classList.replace('z-0', 'z-10');
+                dots[currentIndex].classList.replace('bg-white/40', 'bg-[#8CD62B]');
+            }
+
+            function next() { goToSlide(currentIndex + 1); }
+            function prev() { goToSlide(currentIndex - 1); }
+
+            function startTimer() {
+                stopTimer();
+                slideInterval = setInterval(next, 4500);
+            }
+
+            function stopTimer() {
+                if (slideInterval) clearInterval(slideInterval);
+            }
+
+            if (nextBtn) nextBtn.addEventListener('click', () => { next(); startTimer(); });
+            if (prevBtn) prevBtn.addEventListener('click', () => { prev(); startTimer(); });
+
+            dots.forEach(dot => {
+                dot.addEventListener('click', (e) => {
+                    const idx = parseInt(e.target.getAttribute('data-index'));
+                    goToSlide(idx);
+                    startTimer();
+                });
+            });
+
+            if (container) {
+                container.addEventListener('mouseenter', stopTimer);
+                container.addEventListener('mouseleave', startTimer);
+            }
+
+            startTimer();
+        });
+
+        // --- GESTION DU PANIER ---
+        let cart = [];
+
+        function ajouterAuPanier(nom, prix) {
+            const numericPrix = parseFloat(prix.replace(/[^0-9.-]+/g, ""));
+            cart.push({ nom, prix: numericPrix });
+            mettreAJourPanier();
+        }
+
+        function mettreAJourPanier() {
+            const container = document.getElementById('cart-items');
+            const countBadge = document.getElementById('cart-count');
+            const itemCount = document.getElementById('item-count');
+            const subtotalEl = document.getElementById('subtotal');
+            const totalEl = document.getElementById('total');
+
+            countBadge.innerText = cart.length;
+            itemCount.innerText = cart.length + (cart.length > 1 ? ' articles' : ' article');
+
+            if (cart.length === 0) {
+                container.innerHTML = '<p class="text-stone-500 text-center py-6 italic text-xs">Votre panier est vide pour le moment.</p>';
+                subtotalEl.innerText = '0 Ar';
+                totalEl.innerText = '5 000 Ar';
+                return;
+            }
+
+            container.innerHTML = '';
+            let subtotal = 0;
+
+            cart.forEach((item, index) => {
+                subtotal += item.prix;
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-[#110c09] p-3 rounded-xl border border-[#3b271c]">
+                        <div>
+                            <div class="font-medium text-white">${item.nom}</div>
+                            <div class="text-xs text-[#8CD62B]">${item.prix.toLocaleString()} Ar</div>
+                        </div>
+                        <button onclick="supprimerDuPanier(${index})" class="text-stone-500 hover:text-red-400 text-xs p-1 cursor-pointer">✕</button>
+                    </div>
+                `;
+            });
+
+            subtotalEl.innerText = subtotal.toLocaleString() + ' Ar';
+            totalEl.innerText = (subtotal + 5000).toLocaleString() + ' Ar';
+        }
+
+        function supprimerDuPanier(index) {
+            cart.splice(index, 1);
+            mettreAJourPanier();
+        }
+
+        function togglePanier() {
+            const target = document.getElementById('panier-section');
+            if (target) {
+                target.scrollIntoView({ behavior: 'smooth' });
+            }
+        }
+    </script>
+
+    <!-- Footer Mikaia Premium -->
+<footer class="relative bg-gradient-to-b from-[#180f0a] to-[#0d0704] border-t border-[#3b271c] pt-16 pb-8 text-stone-400 text-sm mt-28 overflow-hidden">
+    
+    <!-- Halo lumineux en arrière-plan (Effet d'ambiance) -->
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-[#8CD62B]/5 blur-3xl pointer-events-none"></div>
+
+    <div class="max-w-7xl mx-auto px-6">
+        
+        <!-- Bloc Supérieur : Appel à l'action / Newsletter -->
+        <div class="bg-[#1f140e]/80 border border-[#3b271c] rounded-3xl p-8 mb-16 shadow-2xl backdrop-blur-md flex flex-col lg:flex-row items-center justify-between gap-6">
+            <div class="space-y-1 text-center lg:text-left">
+                <h3 class="text-xl md:text-2xl font-serif font-bold text-white">Restez informé de nos spécialités</h3>
+                <p class="text-xs md:text-sm text-stone-400 font-light">Inscrivez-vous pour recevoir nos offres privées et événements gastronomiques.</p>
+            </div>
+            <form action="#" method="POST" class="flex w-full lg:w-auto items-center gap-2">
+                <input type="email" placeholder="Votre adresse email..." required class="bg-[#110c09] border border-[#3b271c] text-white text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-[#8CD62B] transition w-full sm:w-72">
+                <button type="submit" class="bg-[#8CD62B] hover:bg-[#7bc220] text-stone-950 font-bold px-6 py-3 rounded-xl transition-all duration-300 shadow-lg shadow-[#8CD62B]/15 whitespace-nowrap cursor-pointer">
+                    S'inscrire
+                </button>
+            </form>
+        </div>
+
+        <!-- Grille Principale (4 Colonnes) -->
+        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12 pb-12 border-b border-[#3b271c]/60">
+            
+            <!-- Colonne 1 : Marque & Slogan -->
+            <div class="space-y-4">
+                <a href="#" class="inline-block">
+                    <img src="{{ asset('images/Mikaia.svg') }}" alt="Mikaia Restaurant" class="h-16 w-auto object-contain filter brightness-110">
+                </a>
+                <p class="text-xs text-stone-300 leading-relaxed font-light">
+                    « L'art de recevoir, la saveur en héritage. » Une cuisine authentique préparée avec passion et livrée directement chez vous.
+                </p>
+                <div class="pt-2 flex items-center space-x-3">
+                    <!-- Social Icons avec effet Hover Vert Anis -->
+                    <a href="#" aria-label="Instagram" class="w-9 h-9 rounded-full bg-[#24170f] border border-[#3b271c] flex items-center justify-center text-stone-300 hover:text-stone-950 hover:bg-[#8CD62B] hover:border-[#8CD62B] transition-all duration-300">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/></svg>
+                    </a>
+                    <a href="#" aria-label="Facebook" class="w-9 h-9 rounded-full bg-[#24170f] border border-[#3b271c] flex items-center justify-center text-stone-300 hover:text-stone-950 hover:bg-[#8CD62B] hover:border-[#8CD62B] transition-all duration-300">
+                        <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M9 8H6v4h3v12h5V12h3.642L18 8h-4V6.333C14 5.374 14.5 5 15.5 5H18V0h-3.808C10.592 0 9 1.583 9 4.615V8z"/></svg>
+                    </a>
+                </div>
+            </div>
+
+            <!-- Colonne 2 : Navigation Rapide -->
+            <div class="space-y-4">
+                <h4 class="text-white font-serif text-base font-semibold tracking-wide border-l-2 border-[#8CD62B] pl-3">Navigation</h4>
+                <ul class="space-y-2.5 text-xs font-light">
+                    <li><a href="#menu" class="hover:text-[#8CD62B] transition flex items-center gap-2"><span class="text-[#8CD62B]">›</span> La Carte & Menu</a></li>
+                    <li><a href="#concept" class="hover:text-[#8CD62B] transition flex items-center gap-2"><span class="text-[#8CD62B]">›</span> Le Concept Mikaia</a></li>
+                    <li><a href="#suivi" class="hover:text-[#8CD62B] transition flex items-center gap-2"><span class="text-[#8CD62B]">›</span> Suivre ma commande</a></li>
+                    <li><a href="#" class="hover:text-[#8CD62B] transition flex items-center gap-2"><span class="text-[#8CD62B]">›</span> Retrait Click & Collect</a></li>
+                </ul>
+            </div>
+
+            <!-- Colonne 3 : Horaires d'Ouverture -->
+            <div class="space-y-4">
+                <h4 class="text-white font-serif text-base font-semibold tracking-wide border-l-2 border-[#8CD62B] pl-3">Horaires</h4>
+                <ul class="space-y-2 text-xs font-light">
+                    <li class="flex justify-between py-1 border-b border-[#3b271c]/40">
+                        <span class="text-stone-300">Lundi – Vendredi :</span>
+                        <span class="text-[#8CD62B] font-medium">11h00 – 22h30</span>
+                    </li>
+                    <li class="flex justify-between py-1 border-b border-[#3b271c]/40">
+                        <span class="text-stone-300">Samedi – Dimanche :</span>
+                        <span class="text-[#8CD62B] font-medium">11h30 – 23h00</span>
+                    </li>
+                    <li class="text-[11px] text-stone-500 italic pt-1">
+                        * Service de livraison continu durant les heures d'ouverture.
+                    </li>
+                </ul>
+            </div>
+
+            <!-- Colonne 4 : Contact & Localisation -->
+            <div class="space-y-4">
+                <h4 class="text-white font-serif text-base font-semibold tracking-wide border-l-2 border-[#8CD62B] pl-3">Contact</h4>
+                <ul class="space-y-3 text-xs font-light">
+                    <li class="flex items-start gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#8CD62B] shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0z"/>
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 11a3 3 0 11-6 0 3 3 0 016 0z"/>
+                        </svg>
+                        <span>Antananarivo, Madagascar</span>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#8CD62B] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z"/>
+                        </svg>
+                        <a href="tel:+261340000000" class="hover:text-[#8CD62B] transition">+261 34 00 000 00</a>
+                    </li>
+                    <li class="flex items-center gap-3">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-[#8CD62B] shrink-0" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 8l7.89 5.26a2 2 0 002.22 0L21 8M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"/>
+                        </svg>
+                        <a href="mailto:contact@mikaia-restaurant.com" class="hover:text-[#8CD62B] transition">contact@mikaia-restaurant.com</a>
+                    </li>
+                </ul>
+            </div>
+
+        </div>
+
+        <!-- Bas de Footer : Copyright & Mentions -->
+        <div class="pt-8 flex flex-col md:flex-row items-center justify-between text-xs text-stone-500 gap-4">
+            <p>&copy; 2026 Mikaia Restaurant. Tous droits réservés.</p>
+            <div class="flex space-x-6">
+                <a href="#" class="hover:text-stone-300 transition">Mentions Légales</a>
+                <a href="#" class="hover:text-stone-300 transition">Politique de Confidentialité</a>
+                <a href="#" class="hover:text-stone-300 transition">CGV & Livraison</a>
+            </div>
+        </div>
+
+    </div>
+</footer>
+</div>
+{% endblock %}

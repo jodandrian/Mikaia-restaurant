@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Administration — Mikaia{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-[#0d0704] text-stone-200 font-sans flex min-h-screen">
+
+    <!-- SIDEBAR ADMIN -->
+    <aside class="w-64 bg-[#18100a] border-r border-[#3b271c] flex flex-col justify-between p-4 shrink-0">
+        <div class="space-y-6">
+            <!-- Logo et Badge -->
+            <div class="flex items-center gap-3 px-2">
+                <img src="{{ asset('images/Mikaia.svg') }}" alt="Mikaia Logo" class="h-10 w-auto">
+                <span class="text-[10px] font-bold uppercase tracking-wider text-[#8CD62B] bg-[#8CD62B]/10 px-2 py-0.5 rounded-full">Backoffice</span>
+            </div>
+
+            <!-- Navigation Principale -->
+            <nav class="space-y-1 text-sm font-medium">
+                <a href="{{ path('app_admin_dashboard') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#8CD62B]/10 hover:text-[#8CD62B] transition">
+                    📊 Tableau de Bord
+                </a>
+                <a href="{{ path('app_admin_dish_index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#8CD62B]/10 hover:text-[#8CD62B] transition">
+                    🍲 Gestion des Plats
+                </a>
+                <a href="{{ path('app_admin_category_index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#8CD62B]/10 hover:text-[#8CD62B] transition">
+                    🏷️ Catégories
+                </a>
+                <a href="{{ path('app_admin_order_index') }}" class="flex items-center gap-3 px-3 py-2.5 rounded-xl hover:bg-[#8CD62B]/10 hover:text-[#8CD62B] transition">
+                    🛍️ Commandes
+                </a>
+            </nav>
+        </div>
+
+        <!-- Lien vers le Site Public -->
+        <div class="border-t border-[#3b271c] pt-4">
+            <a href="/" target="_blank" class="text-xs text-stone-400 hover:text-white flex items-center gap-2">
+                🌐 Voir le site public
+            </a>
+        </div>
+    </aside>
+
+    <!-- CONTENU PRINCIPAL DYNAMIQUE -->
+    <main class="flex-1 p-8 overflow-y-auto">
+        {# Gestion des messages de notification (Flash System) #}
+        {% for message in app.flashes('success') %}
+            <div class="mb-6 p-4 rounded-xl bg-[#8CD62B]/10 border border-[#8CD62B]/30 text-[#8CD62B] text-sm font-medium flex items-center justify-between">
+                <span>✓ {{ message }}</span>
+            </div>
+        {% endfor %}
+
+        {% for message in app.flashes('error') %}
+            <div class="mb-6 p-4 rounded-xl bg-red-500/10 border border-red-500/30 text-red-400 text-sm font-medium flex items-center justify-between">
+                <span>⚠️ {{ message }}</span>
+            </div>
+        {% endfor %}
+
+        {# Emplacement remplacé par les pages d'administration #}
+        {% block body %}{% endblock %}
+    </main>
+
+</body>
+</html>

@@ -1,0 +1,235 @@
+{# Indique l'héritage du fichier de layout principal #}
+{% extends 'Front/base.html.twig' %}
+
+{# Personnalise le titre spécifique pour la page d'accueil #}
+{% block title %}Mikaia — Commande en Ligne & Restaurant{% endblock %}
+
+{# Début du contenu injecté dans le body de base.html.twig #}
+{% block body %}
+    <!-- HERO SECTION -->
+    <header id="hero-section" class="relative h-[80vh] sm:h-[85vh] min-h-[500px] flex items-center justify-center overflow-hidden bg-[#110c09]">
+        
+        {# Carrousel d'images d'arrière-plan avec transition d'opacité #}
+        <div id="mikaia-carousel" class="absolute inset-0 w-full h-full">
+            <div class="carousel-slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-100 z-10">
+                <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=1920&q=80" alt="Grillade Signature" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#110c09] via-[#110c09]/60 to-black/70"></div>
+            </div>
+            <div class="carousel-slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0 z-0">
+                <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?auto=format&fit=crop&w=1920&q=80" alt="Gastronomie Mikaia" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#110c09] via-[#110c09]/60 to-black/70"></div>
+            </div>
+            <div class="carousel-slide absolute inset-0 transition-opacity duration-1000 ease-in-out opacity-0 z-0">
+                <img src="https://images.unsplash.com/photo-1555396273-367ea4eb4db5?auto=format&fit=crop&w=1920&q=80" alt="Ambiance Restaurant" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#110c09] via-[#110c09]/60 to-black/70"></div>
+            </div>
+        </div>
+
+        {# Textes principaux de présentation et Slogan Mikaia #}
+        <div class="relative z-20 max-w-4xl mx-auto text-center space-y-4 sm:space-y-6 px-4 sm:px-6 pt-20 sm:pt-24">
+            {# Badge arborant le slogan du restaurant #}
+            <span class="inline-block py-1.5 px-4 sm:px-5 rounded-full bg-[#8CD62B]/20 backdrop-blur-md border border-[#8CD62B]/40 text-[#8CD62B] text-[10px] sm:text-xs tracking-widest uppercase font-semibold shadow-xl">
+                L'art de recevoir, la saveur en héritage
+            </span>
+            <h1 class="text-3xl sm:text-5xl md:text-6xl font-serif font-bold tracking-tight text-white leading-tight drop-shadow-2xl">
+                Commandez en ligne <br class="hidden xs:block">et savourez <span class="text-transparent bg-clip-text bg-gradient-to-r from-[#8CD62B] to-[#b3f75e]">chez vous</span>
+            </h1>
+            <p class="text-xs sm:text-base md:text-lg text-stone-200 max-w-xl mx-auto font-light drop-shadow px-2">
+                Choisissez vos plats préférés, personnalisez votre commande et faites-vous livrer ou optez pour le retrait en restaurant.
+            </p>
+            <div class="pt-2 flex flex-col sm:flex-row items-center justify-center gap-4">
+                <a href="#menu" class="w-full sm:w-auto inline-flex items-center justify-center gap-2 bg-[#8CD62B] hover:bg-[#7bc220] text-stone-950 font-bold px-8 py-3.5 rounded-full transition-all duration-300 transform hover:scale-105 shadow-lg shadow-[#8CD62B]/20">
+                    <span>Découvrir la Carte</span>
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7" />
+                    </svg>
+                </a>
+            </div>
+        </div>
+
+        {# Boutons interactifs Précédent / Suivant du carrousel #}
+        <button id="prevBtn" aria-label="Précédent" class="hidden sm:flex absolute left-4 top-1/2 -translate-y-1/2 z-30 bg-black/40 hover:bg-[#8CD62B] hover:text-stone-950 text-white p-3 rounded-full backdrop-blur-md border border-white/10 transition cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/></svg>
+        </button>
+        <button id="nextBtn" aria-label="Suivant" class="hidden sm:flex absolute right-4 top-1/2 -translate-y-1/2 z-30 bg-black/40 hover:bg-[#8CD62B] hover:text-stone-950 text-white p-3 rounded-full backdrop-blur-md border border-white/10 transition cursor-pointer">
+            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/></svg>
+        </button>
+
+        {# Puces de sélection directe d'une diapositive du carrousel #}
+        <div id="carouselDots" class="absolute bottom-6 left-1/2 -translate-x-1/2 z-30 flex items-center space-x-2.5">
+            <button data-index="0" class="dot w-2.5 h-2.5 rounded-full bg-[#8CD62B] transition-all cursor-pointer"></button>
+            <button data-index="1" class="dot w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-white transition-all cursor-pointer"></button>
+            <button data-index="2" class="dot w-2.5 h-2.5 rounded-full bg-white/40 hover:bg-white transition-all cursor-pointer"></button>
+        </div>
+    </header>
+
+    <!-- MAIN SECTION : LA CARTE ET PANIER DESKTOP -->
+    <main id="menu" class="max-w-7xl mx-auto py-12 sm:py-16 px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-12">
+        
+        {# Grille de plats (Prend 2/3 de l'écran en version desktop) #}
+        <div class="lg:col-span-2 space-y-8">
+            
+            {# En-tête de section avec les filtres dynamiques de catégories Twig #}
+            <div class="flex flex-col sm:flex-row sm:items-center justify-between border-b border-[#3b271c] pb-4 gap-4">
+                <h2 class="text-2xl sm:text-3xl font-serif font-bold text-white">Notre Carte</h2>
+                <div class="flex items-center gap-2 overflow-x-auto pb-2 sm:pb-0 scrollbar-none text-xs">
+                    <button class="bg-[#8CD62B] text-stone-950 font-semibold px-4 py-2 rounded-xl shadow-md whitespace-nowrap">Tous</button>
+                    {# Boucle Twig sur la liste des catégories récupérées du Controller Symfony #}
+                    {% for categorie in categories|default([]) %}
+                        <button class="bg-[#1c130d] text-stone-300 hover:text-white px-4 py-2 rounded-xl border border-[#3b271c] transition whitespace-nowrap">
+                            {{ categorie.nomCategorie }}
+                        </button>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            {# Grille de cartes de plats #}
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
+                {# Boucle Twig sur la variable `plats` transmise par Symfony #}
+                {% for plat in plats|default([]) %}
+                    <div class="group bg-[#1a120c]/90 border border-[#3b271c] rounded-2xl overflow-hidden hover:border-[#8CD62B]/50 transition-all duration-300 flex flex-col justify-between shadow-xl">
+                        {# Photo du plat (Gère l'image enregistrée ou affiche une image par défaut) #}
+                        <div class="h-48 sm:h-52 relative overflow-hidden bg-stone-900">
+                            {% if plat.image %}
+                                <img src="{{ asset('uploads/images/' ~ plat.image) }}" alt="{{ plat.nomPlat }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy">
+                            {% else %}
+                                <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80" alt="{{ plat.nomPlat }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110" loading="lazy">
+                            {% endif %}
+                            <div class="absolute inset-0 bg-gradient-to-t from-[#1a120c] via-transparent to-transparent opacity-60"></div>
+                            
+                            {# Badge d'indisponibilité si la propriété isDisponible existe et vaut false #}
+                            {% if plat.isDisponible is defined and not plat.isDisponible %}
+                                <span class="absolute top-3 right-3 bg-red-900/90 text-red-200 border border-red-700 text-[10px] font-medium px-2.5 py-1 rounded-full shadow-md">Épuisé</span>
+                            {% endif %}
+                        </div>
+                        
+                        {# Informations du plat : Nom, Catégorie, Prix formaté Twig et Description #}
+                        <div class="p-5 sm:p-6 space-y-4 flex-grow flex flex-col justify-between">
+                            <div>
+                                <div class="text-[10px] uppercase tracking-widest text-[#8CD62B] font-semibold">
+                                    {{ plat.categorie ? plat.categorie.nomCategorie : 'Spécialité' }}
+                                </div>
+                                <div class="flex justify-between items-baseline mt-1 gap-2">
+                                    <h3 class="text-base sm:text-lg font-serif font-bold text-white group-hover:text-[#8CD62B] transition">{{ plat.nomPlat }}</h3>
+                                    {# Formatage numérique du prix en Ariary (Ar) #}
+                                    <span class="text-[#8CD62B] font-bold text-sm sm:text-base whitespace-nowrap">
+                                        {{ plat.prixPlat|number_format(0, ',', ' ') }} Ar
+                                    </span>
+                                </div>
+                                <p class="text-stone-300 text-xs leading-relaxed font-light mt-2 line-clamp-3">{{ plat.descriptionPlat }}</p>
+                            </div>
+                            
+                            {# Bouton d'actionJS pour ajouter le plat sélectionné au panier #}
+                            <div class="pt-3 border-t border-[#3b271c]">
+                                <button data-nom="{{ plat.nomPlat }}" data-prix="{{ plat.prixPlat }}" onclick="ajouterAuPanier(this.dataset.nom, this.dataset.prix)" class="w-full bg-[#26170d] hover:bg-[#8CD62B] hover:text-stone-950 text-stone-200 text-xs sm:text-sm font-medium py-2.5 rounded-xl transition duration-300 flex items-center justify-center gap-2 shadow-inner cursor-pointer active:scale-95">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                    </svg>
+                                    Ajouter au panier
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                {# Message alternatif de secours si aucun plat n'est trouvé en base de données #}
+                {% else %}
+                    <div class="col-span-full text-center py-12 text-stone-400 italic">
+                        Aucun plat n'est disponible pour le moment.
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- BLOC PANIER DESKTOP (STICKY) -->
+        {# Panier fixe à droite de la carte sur grand écran (1/3 de la largeur) #}
+        <div class="hidden lg:block lg:col-span-1">
+            <div id="panier-desktop" class="sticky top-28 bg-[#18100a] border border-[#3b271c] rounded-3xl p-6 shadow-2xl space-y-6">
+                <div class="flex items-center justify-between border-b border-[#3b271c] pb-4">
+                    <h3 class="text-xl font-serif font-bold text-white flex items-center gap-2">Votre Commande</h3>
+                    <span class="text-xs text-stone-400 item-count-text">0 article</span>
+                </div>
+                {# Liste JS mis à jour à chaque ajout #}
+                <div class="cart-items-container space-y-3 max-h-64 overflow-y-auto pr-1 text-sm text-stone-300">
+                    <p class="text-stone-500 text-center py-6 italic text-xs">Votre panier est vide pour le moment.</p>
+                </div>
+                {# Totaux dynamiques calculés en JS #}
+                <div class="border-t border-[#3b271c] pt-4 space-y-3">
+                    <div class="flex justify-between text-stone-400 text-sm"><span>Sous-total</span><span class="subtotal-text">0 Ar</span></div>
+                    <div class="flex justify-between text-stone-400 text-sm"><span>Frais de livraison</span><span>5 000 Ar</span></div>
+                    <div class="flex justify-between text-white font-bold text-lg pt-2 border-t border-[#3b271c]/50"><span>Total</span><span class="total-text text-[#8CD62B]">5 000 Ar</span></div>
+                </div>
+                {# Formulaire de soumission de commande desktop #}
+                <form action="#" method="POST" class="space-y-4 pt-2">
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Mode de retrait</label>
+                        <select class="w-full bg-[#110c09] border border-[#3b271c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#8CD62B]">
+                            <option>Livraison à domicile</option>
+                            <option>À emporter (Click & Collect)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs uppercase tracking-wider text-stone-400 mb-1">Téléphone / Adresse</label>
+                        <input type="text" placeholder="Votre numéro ou adresse..." class="w-full bg-[#110c09] border border-[#3b271c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#8CD62B]">
+                    </div>
+                    <button type="submit" class="w-full bg-[#8CD62B] hover:bg-[#7bc220] text-stone-950 font-semibold py-3.5 rounded-xl transition shadow-lg shadow-[#8CD62B]/15 text-center cursor-pointer">
+                        Valider la commande
+                    </button>
+                </form>
+            </div>
+        </div>
+
+    </main>
+{% endblock %}
+
+{# Script JS du carrousel de la page d'accueil injecté dans le bloc javascripts de base.html.twig #}
+{% block javascripts %}
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const slides = document.querySelectorAll('.carousel-slide');
+        const dots = document.querySelectorAll('#carouselDots .dot');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        let currentIndex = 0;
+        let slideInterval = null;
+
+        // Change la diapositive active en gérant les classes de transition CSS Tailwind
+        function goToSlide(index) {
+            if (slides.length === 0) return;
+            // Masque la diapositive actuelle
+            slides[currentIndex].classList.replace('opacity-100', 'opacity-0');
+            slides[currentIndex].classList.replace('z-10', 'z-0');
+            dots[currentIndex].classList.replace('bg-[#8CD62B]', 'bg-white/40');
+
+            // Calcule le nouvel index (gère le défilement infini)
+            currentIndex = (index + slides.length) % slides.length;
+
+            // Affiche la nouvelle diapositive
+            slides[currentIndex].classList.replace('opacity-0', 'opacity-100');
+            slides[currentIndex].classList.replace('z-0', 'z-10');
+            dots[currentIndex].classList.replace('bg-white/40', 'bg-[#8CD62B]');
+        }
+
+        function next() { goToSlide(currentIndex + 1); }
+        function prev() { goToSlide(currentIndex - 1); }
+
+        // Démarre la rotation automatique du carrousel (toutes les 4.5 secondes)
+        function startTimer() {
+            if (slideInterval) clearInterval(slideInterval);
+            slideInterval = setInterval(next, 4500);
+        }
+
+        // Écouteurs d'événements sur les boutons Précédent / Suivant
+        if (nextBtn) nextBtn.addEventListener('click', () => { next(); startTimer(); });
+        if (prevBtn) prevBtn.addEventListener('click', () => { prev(); startTimer(); });
+
+        // Écouteurs d'événements sur les puces de pagination du carrousel
+        dots.forEach(dot => {
+            dot.addEventListener('click', (e) => {
+                goToSlide(parseInt(e.target.getAttribute('data-index')));
+                startTimer();
+            });
+        });
+
+        startTimer();
+    });
+</script>
+{% endblock %}

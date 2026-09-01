@@ -1,0 +1,316 @@
+{# Indique au navigateur qu'il s'agit d'un document HTML5 #}
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    {# Définit l'encodage des caractères en UTF-8 pour gérer les accents correctement #}
+    <meta charset="UTF-8">
+    {# Assure un affichage responsive adapté à la largeur de l'écran du périphérique #}
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
+    {# Bloc Twig réutilisable : permet aux pages enfants de modifier le titre HTML <title> #}
+    <title>{% block title %}Mikaia — Restaurant{% endblock %}</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    {# Bloc réservé à l'insertion de CSS spécifiques aux pages enfants si besoin #}
+    {% block stylesheets %}{% endblock %}
+</head>
+
+{# Application du fond sombre (#110c09), texte clair et personnalisation de la couleur de sélection de texte #}
+<body class="bg-[#110c09] text-stone-100 font-sans selection:bg-[#8CD62B] selection:text-stone-950">
+
+    {# Conteneur flex pour forcer le footer à rester en bas de page (min-h-screen) #}
+    <div class="min-h-screen flex flex-col justify-between">
+        
+        <!-- NAVBAR RESPONSIVE -->
+        {# Barre de navigation fixe en haut avec flou d'arrière-plan (backdrop-blur) #}
+        <nav class="fixed top-0 left-0 w-full z-50 bg-gradient-to-b from-black/90 via-black/50 to-transparent backdrop-blur-sm transition-all duration-300">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 h-20 md:h-24 grid grid-cols-3 items-center">
+                
+                {# Colonne gauche : Bouton hamburger (Mobile) + Liens de navigation (Desktop) #}
+                <div class="flex items-center justify-start">
+                    {# Déclenche le menu burger sur mobile via JS #}
+                    <button onclick="toggleMobileMenu()" class="md:hidden text-stone-200 hover:text-[#8CD62B] p-2 focus:outline-none cursor-pointer transition" aria-label="Ouvrir le menu">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                        </svg>
+                    </button>
+                    {# Menu principal sur grands écrans (md:flex) #}
+                    <div class="hidden md:flex items-center space-x-8 text-sm font-medium text-stone-200">
+                        <a href="{{ path('app_front_home') }}#menu" class="hover:text-[#8CD62B] transition duration-200 drop-shadow">La Carte</a>
+                        <a href="#concept" class="hover:text-[#8CD62B] transition duration-200 drop-shadow">Le Concept</a>
+                    </div>
+                </div>
+
+                {# Colonne centrale : Logo SVG dynamique via la fonction Twig asset() #}
+                <div class="flex justify-center items-center">
+                    <a href="{{ path('app_front_home') }}" class="flex items-center group py-1">
+                        <img src="{{ asset('images/Mikaia.svg') }}" alt="Mikaia Restaurant" class="h-14 sm:h-16 md:h-20 w-auto object-contain transition-all duration-300 group-hover:scale-105 filter brightness-110 contrast-105 drop-shadow-[0_4px_12px_rgba(0,0,0,0.8)]">
+                    </a>
+                </div>
+
+                {# Colonne droite : Suivi de commande + Bouton d'ouverture du Panier #}
+                <div class="flex items-center justify-end space-x-4 sm:space-x-6">
+                    <a href="#suivi" class="hidden md:inline-block text-sm font-medium text-stone-200 hover:text-[#8CD62B] transition duration-200 drop-shadow">Suivre ma commande</a>
+                    
+                    {# Bouton panier : ouvre le drawer sur mobile ou scroll jusqu'au panier sur desktop #}
+                    <button onclick="togglePanier()" class="relative bg-black/40 backdrop-blur-md border border-[#C88A4B]/50 hover:border-[#8CD62B] text-stone-200 px-3.5 py-2 sm:px-5 sm:py-2.5 rounded-full flex items-center gap-2 sm:gap-3 transition duration-300 shadow-lg cursor-pointer">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-[#8CD62B]" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+                        </svg>
+                        <span class="text-xs sm:text-sm font-medium hidden sm:inline">Panier</span>
+                        {# Badge affichant le nombre total de plats dans le panier #}
+                        <span id="cart-count" class="bg-[#8CD62B] text-stone-950 text-xs font-bold px-2 py-0.5 rounded-full">0</span>
+                    </button>
+                </div>
+            </div>
+        </nav>
+
+        <!-- MENU DÉROULANT MOBILE -->
+        {# Menu overlay masque qui apparaît au clic sur le bouton hamburger #}
+        <div id="mobile-nav-menu" class="fixed inset-0 z-40 md:hidden pointer-events-none opacity-0 transition-all duration-300">
+            {# Arrière-plan assombri au clic pour fermer le menu #}
+            <div onclick="toggleMobileMenu()" class="absolute inset-0 bg-black/80 backdrop-blur-md"></div>
+            {# Contenu des liens de navigation mobile #}
+            <div id="mobile-nav-content" class="absolute top-20 left-0 right-0 bg-[#18100a] border-b border-[#3b271c] p-6 space-y-4 shadow-2xl transform -translate-y-full transition-transform duration-300 pointer-events-auto">
+                <a href="#menu" onclick="toggleMobileMenu()" class="block text-base font-medium text-stone-200 hover:text-[#8CD62B] py-2 border-b border-[#3b271c]/50">La Carte</a>
+                <a href="#concept" onclick="toggleMobileMenu()" class="block text-base font-medium text-stone-200 hover:text-[#8CD62B] py-2 border-b border-[#3b271c]/50">Le Concept</a>
+                <a href="#suivi" onclick="toggleMobileMenu()" class="block text-base font-medium text-stone-200 hover:text-[#8CD62B] py-2">Suivre ma commande</a>
+            </div>
+        </div>
+
+        <!-- CONTENU SPÉCIFIQUE DE LA PAGE -->
+        {# C'est ici que Symfony injectera le contenu du template index.html.twig #}
+        <div class="flex-grow">
+            {% block body %}{% endblock %}
+        </div>
+
+        <!-- BARRE FLOTTANTE PANIER MOBILE -->
+        {# Barre fixée au bas de l'écran sur mobile dès qu'un plat est ajouté au panier #}
+        <div id="mobile-cart-bar" class="fixed bottom-4 left-4 right-4 z-40 lg:hidden transform translate-y-24 transition-transform duration-300">
+            <button onclick="togglePanier()" class="w-full bg-[#8CD62B] text-stone-950 font-bold py-3.5 px-6 rounded-2xl shadow-2xl flex items-center justify-between cursor-pointer">
+                <div class="flex items-center gap-3">
+                    <span class="bg-stone-950 text-[#8CD62B] text-xs px-2.5 py-1 rounded-full font-bold" id="mobile-bar-count">0</span>
+                    <span class="text-sm">Voir mon panier</span>
+                </div>
+                <span class="text-base font-extrabold" id="mobile-bar-total">0 Ar</span>
+            </button>
+        </div>
+
+        <!-- DRAWER PANIER MOBILE -->
+        {# Panneau glissant depuis le bas de l'écran pour récapituler la commande sur smartphone #}
+        <div id="mobile-cart-drawer" class="fixed inset-0 z-50 lg:hidden pointer-events-none opacity-0 transition-all duration-300">
+            <div onclick="togglePanier()" class="absolute inset-0 bg-black/80 backdrop-blur-sm"></div>
+            <div class="absolute bottom-0 left-0 right-0 bg-[#18100a] border-t border-[#3b271c] rounded-t-3xl p-6 space-y-6 max-h-[85vh] overflow-y-auto transform translate-y-full transition-transform duration-300 pointer-events-auto shadow-2xl" id="mobile-drawer-content">
+                <div class="flex items-center justify-between border-b border-[#3b271c] pb-4">
+                    <h3 class="text-xl font-serif font-bold text-white">Votre Commande</h3>
+                    <button onclick="togglePanier()" class="text-stone-400 hover:text-white text-xl p-1 cursor-pointer">✕</button>
+                </div>
+                {# Liste JS dynamique des éléments ajoutés #}
+                <div class="cart-items-container space-y-3 max-h-52 overflow-y-auto text-sm text-stone-300">
+                    <p class="text-stone-500 text-center py-6 italic text-xs">Votre panier est vide pour le moment.</p>
+                </div>
+                {# Totaux mis à jour dynamiquement en JS #}
+                <div class="border-t border-[#3b271c] pt-4 space-y-2">
+                    <div class="flex justify-between text-stone-400 text-xs">
+                        <span>Sous-total</span>
+                        <span class="subtotal-text">0 Ar</span>
+                    </div>
+                    <div class="flex justify-between text-stone-400 text-xs">
+                        <span>Livraison</span>
+                        <span>5 000 Ar</span>
+                    </div>
+                    <div class="flex justify-between text-white font-bold text-base pt-2 border-t border-[#3b271c]/50">
+                        <span>Total</span>
+                        <span class="total-text text-[#8CD62B]">5 000 Ar</span>
+                    </div>
+                </div>
+                {# Formulaire d'envoi rapide de la commande #}
+                <form action="#" method="POST" class="space-y-3 pt-2">
+                    <input type="text" placeholder="Téléphone / Adresse..." class="w-full bg-[#110c09] border border-[#3b271c] rounded-xl px-4 py-2.5 text-sm text-white focus:outline-none focus:border-[#8CD62B]">
+                    <button type="submit" class="w-full bg-[#8CD62B] hover:bg-[#7bc220] text-stone-950 font-bold py-3 rounded-xl transition cursor-pointer">
+                        Valider la commande
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- FOOTER -->
+        <footer class="relative bg-gradient-to-b from-[#180f0a] to-[#0d0704] border-t border-[#3b271c] pt-16 pb-8 text-stone-400 text-sm mt-20 overflow-hidden">
+            <div class="absolute top-0 left-1/2 -translate-x-1/2 w-3/4 h-24 bg-[#8CD62B]/5 blur-3xl pointer-events-none"></div>
+            <div class="max-w-7xl mx-auto px-4 sm:px-6">
+                {# Section Newsletter #}
+                <div class="bg-[#1f140e]/80 border border-[#3b271c] rounded-3xl p-6 sm:p-8 mb-12 sm:mb-16 shadow-2xl backdrop-blur-md flex flex-col lg:flex-row items-center justify-between gap-6">
+                    <div class="space-y-1 text-center lg:text-left">
+                        <h3 class="text-lg sm:text-2xl font-serif font-bold text-white">Restez informé de nos spécialités</h3>
+                        <p class="text-xs sm:text-sm text-stone-400 font-light">Inscrivez-vous pour recevoir nos offres privées et événements gastronomiques.</p>
+                    </div>
+                    <form action="#" method="POST" class="flex w-full lg:w-auto items-center gap-2">
+                        <input type="email" placeholder="Votre adresse email..." required class="bg-[#110c09] border border-[#3b271c] text-white text-xs sm:text-sm rounded-xl px-4 py-3 focus:outline-none focus:border-[#8CD62B] transition w-full sm:w-72">
+                        <button type="submit" class="bg-[#8CD62B] hover:bg-[#7bc220] text-stone-950 font-bold px-5 py-3 rounded-xl transition duration-300 shadow-lg text-xs sm:text-sm whitespace-nowrap cursor-pointer">
+                            S'inscrire
+                        </button>
+                    </form>
+                </div>
+
+                {# Grille de liens du Footer (4 colonnes) #}
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-8 sm:gap-12 pb-12 border-b border-[#3b271c]/60">
+                    {# Colonne 1 : Logo & Slogan #}
+                    <div class="space-y-4">
+                        <a href="#" class="inline-block">
+                            <img src="{{ asset('images/Mikaia.svg') }}" alt="Mikaia Restaurant" class="h-14 w-auto object-contain filter brightness-110">
+                        </a>
+                        <p class="text-xs text-stone-300 leading-relaxed font-light">
+                            « L'art de recevoir, la saveur en héritage. » Une cuisine authentique préparée avec passion et livrée directement chez vous.
+                        </p>
+                    </div>
+                    {# Colonne 2 : Liens internes #}
+                    <div class="space-y-4">
+                        <h4 class="text-white font-serif text-sm sm:text-base font-semibold border-l-2 border-[#8CD62B] pl-3">Navigation</h4>
+                        <ul class="space-y-2 text-xs font-light">
+                            <li><a href="#menu" class="hover:text-[#8CD62B] transition">› La Carte & Menu</a></li>
+                            <li><a href="#concept" class="hover:text-[#8CD62B] transition">› Le Concept Mikaia</a></li>
+                            <li><a href="#suivi" class="hover:text-[#8CD62B] transition">› Suivre ma commande</a></li>
+                        </ul>
+                    </div>
+                    {# Colonne 3 : Horaires d'ouverture #}
+                    <div class="space-y-4">
+                        <h4 class="text-white font-serif text-sm sm:text-base font-semibold border-l-2 border-[#8CD62B] pl-3">Horaires</h4>
+                        <ul class="space-y-2 text-xs font-light">
+                            <li class="flex justify-between py-1 border-b border-[#3b271c]/40"><span>Lun – Ven :</span><span class="text-[#8CD62B]">11h00 – 22h30</span></li>
+                            <li class="flex justify-between py-1 border-b border-[#3b271c]/40"><span>Sam – Dim :</span><span class="text-[#8CD62B]">11h30 – 23h00</span></li>
+                        </ul>
+                    </div>
+                    {# Colonne 4 : Coordonnées de contact #}
+                    <div class="space-y-4">
+                        <h4 class="text-white font-serif text-sm sm:text-base font-semibold border-l-2 border-[#8CD62B] pl-3">Contact</h4>
+                        <ul class="space-y-2 text-xs font-light">
+                            <li>Antananarivo, Madagascar</li>
+                            <li><a href="tel:+261340000000" class="hover:text-[#8CD62B] transition">+261 34 00 000 00</a></li>
+                            <li><a href="mailto:contact@mikaia-restaurant.com" class="hover:text-[#8CD62B] transition">contact@mikaia-restaurant.com</a></li>
+                        </ul>
+                    </div>
+                </div>
+
+                {# Mentions légales et copyright #}
+                <div class="pt-8 flex flex-col sm:flex-row items-center justify-between text-xs text-stone-500 gap-4 text-center sm:text-left">
+                    <p>&copy; 2026 Mikaia Restaurant. Tous droits réservés.</p>
+                    <div class="flex space-x-6">
+                        <a href="#" class="hover:text-stone-300 transition">Mentions Légales</a>
+                        <a href="#" class="hover:text-stone-300 transition">CGV & Livraison</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- SCRIPTS GLOBAUX JS -->
+    <script>
+        // Bascule la visibilité du menu mobile burger
+        function toggleMobileMenu() {
+            const menu = document.getElementById('mobile-nav-menu');
+            const content = document.getElementById('mobile-nav-content');
+            if (menu.classList.contains('opacity-0')) {
+                menu.classList.remove('pointer-events-none', 'opacity-0');
+                content.classList.remove('-translate-y-full');
+            } else {
+                menu.classList.add('opacity-0', 'pointer-events-none');
+                content.classList.add('-translate-y-full');
+            }
+        }
+
+        // Tableau dynamique contenant le panier utilisateur
+        let cart = [];
+
+        // Fonction appelée lors du clic sur un bouton "Ajouter au panier"
+        function ajouterAuPanier(nom, prix) {
+            // Nettoie le prix pour ne garder que la valeur numérique
+            const numericPrix = parseFloat(prix.replace(/[^0-9.-]+/g, ""));
+            cart.push({ nom, prix: numericPrix });
+            mettreAJourPanier();
+        }
+
+        // Met à jour l'affichage dynamique du panier (compteur, listes, total, sous-total)
+        function mettreAJourPanier() {
+            const countBadge = document.getElementById('cart-count');
+            const countTexts = document.querySelectorAll('.item-count-text');
+            const subtotalTexts = document.querySelectorAll('.subtotal-text');
+            const totalTexts = document.querySelectorAll('.total-text');
+            const containers = document.querySelectorAll('.cart-items-container');
+            const mobileBar = document.getElementById('mobile-cart-bar');
+            const mobileBarCount = document.getElementById('mobile-bar-count');
+            const mobileBarTotal = document.getElementById('mobile-bar-total');
+
+            const totalItems = cart.length;
+            countBadge.innerText = totalItems;
+            countTexts.forEach(el => el.innerText = totalItems + (totalItems > 1 ? ' articles' : ' article'));
+
+            let subtotal = 0;
+            let htmlContent = '';
+
+            // Si le panier est vide
+            if (totalItems === 0) {
+                htmlContent = '<p class="text-stone-500 text-center py-6 italic text-xs">Votre panier est vide pour le moment.</p>';
+                subtotalTexts.forEach(el => el.innerText = '0 Ar');
+                totalTexts.forEach(el => el.innerText = '5 000 Ar');
+                if (mobileBar) mobileBar.classList.add('translate-y-24');
+            } else {
+                // Génère le HTML pour chaque plat présent dans le panier
+                cart.forEach((item, index) => {
+                    subtotal += item.prix;
+                    htmlContent += `
+                        <div class="flex justify-between items-center bg-[#110c09] p-3 rounded-xl border border-[#3b271c]">
+                            <div>
+                                <div class="font-medium text-white text-xs sm:text-sm">${item.nom}</div>
+                                <div class="text-xs text-[#8CD62B]">${item.prix.toLocaleString()} Ar</div>
+                            </div>
+                            <button onclick="supprimerDuPanier(${index})" class="text-stone-500 hover:text-red-400 text-xs p-1 cursor-pointer">✕</button>
+                        </div>
+                    `;
+                });
+
+                // Calculs financiers (frais de livraison fixes à 5000 Ar)
+                subtotalTexts.forEach(el => el.innerText = subtotal.toLocaleString() + ' Ar');
+                const finalTotal = (subtotal + 5000).toLocaleString() + ' Ar';
+                totalTexts.forEach(el => el.innerText = finalTotal);
+
+                // Affichage de la barre mobile flottante
+                if (mobileBar) {
+                    mobileBarCount.innerText = totalItems;
+                    mobileBarTotal.innerText = finalTotal;
+                    mobileBar.classList.remove('translate-y-24');
+                }
+            }
+            // Injection du HTML dans les conteneurs (Mobile + Desktop)
+            containers.forEach(c => c.innerHTML = htmlContent);
+        }
+
+        // Supprime un produit du panier selon son index
+        function supprimerDuPanier(index) {
+            cart.splice(index, 1);
+            mettreAJourPanier();
+        }
+
+        // Bascule le panier selon qu'on est sur grand ou petit écran
+        function togglePanier() {
+            const isDesktop = window.innerWidth >= 1024;
+            if (isDesktop) {
+                const target = document.getElementById('panier-desktop');
+                if (target) target.scrollIntoView({ behavior: 'smooth' });
+            } else {
+                const drawer = document.getElementById('mobile-cart-drawer');
+                const drawerContent = document.getElementById('mobile-drawer-content');
+                if (drawer.classList.contains('opacity-0')) {
+                    drawer.classList.remove('pointer-events-none', 'opacity-0');
+                    drawerContent.classList.remove('translate-y-full');
+                } else {
+                    drawer.classList.add('opacity-0', 'pointer-events-none');
+                    drawerContent.classList.add('translate-y-full');
+                }
+            }
+        }
+    </script>
+
+    {# Emplacement pour les JS spécifiques aux vues enfants #}
+    {% block javascripts %}{% endblock %}
+</body>
+</html>

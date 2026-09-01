@@ -1,0 +1,314 @@
+{% extends 'Front/base.html.twig' %}
+
+{# Définit le titre spécifique à cette page (écrase le block title du fichier de base) #}
+{% block title %}Mikaia — Menu & Commande{% endblock %}
+
+{% block body %}
+{# Style local pour masquer la barre de défilement horizontale des filtres tout en gardant le scroll #}
+<style>
+    .no-scrollbar::-webkit-scrollbar { display: none; }
+    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+</style>
+
+{# Conteneur principal : x-data initialise le composant AlpineJS 'cartComponent()' pour tout ce bloc #}
+{# pt-28/md:pt-32 : Marge haute essentielle pour empêcher la navbar fixe de masquer le haut de la page #}
+{# grid-cols-1 lg:grid-cols-12 : Grille responsive (1 colonne mobile, 12 colonnes sur grand écran) #}
+<main id="menu-cart-section" x-data="cartComponent()" class="max-w-7xl mx-auto pt-28 md:pt-32 pb-12 px-4 sm:px-6 grid grid-cols-1 lg:grid-cols-12 gap-6">
+    
+    {# COLONNE GAUCHE (8 Cols sur XL, 7 sur LG) : CARTE DES PLATS #}
+    {# x-data crée une variable reactive Alpine.js 'selectedCategory' localisée pour le filtrage par catégorie #}
+    <div class="lg:col-span-7 xl:col-span-8 space-y-5" x-data="{ selectedCategory: 'all' }">
+        
+        <!-- BARRE DE FILTRES PAR CATÉGORIE -->
+        <div class="border-b border-[#3b271c]/60 pb-3">
+            <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+                {# Bouton "Tous" : au clic, passe 'selectedCategory' à 'all' #}
+                {# :class applique dynamiquement le style vert (#8CD62B) si 'selectedCategory' vaut 'all' #}
+                <button type="button" 
+                        @click="selectedCategory = 'all'" 
+                        :class="selectedCategory === 'all' ? 'bg-[#8CD62B] text-stone-950 font-bold shadow-lg shadow-[#8CD62B]/20' : 'bg-[#18100a] text-stone-300 hover:text-white border border-[#3b271c] hover:border-[#8CD62B]/40'"
+                        class="px-4 py-2 rounded-xl text-xs transition-all whitespace-nowrap cursor-pointer">
+                    Tous
+                </button>
+
+                {# Boucle Twig qui parcourt le tableau des catégories envoyé par le Controller Symfony #}
+                {% for category in categories|default([]) %}
+                    {# Variables Twig de secours (null coalescing ??) pour éviter les erreurs si une propriété varie #}
+                    {% set catId = category.id ?? loop.index %}
+                    {% set catName = category.name ?? category.nomCategory ?? category.nom ?? 'Catégorie' %}
+                    
+                    {# Bouton de catégorie dynamique : passe la variable Alpine.js 'selectedCategory' à l'ID courant #}
+                    <button type="button" 
+                            @click="selectedCategory = '{{ catId }}'" 
+                            :class="selectedCategory === '{{ catId }}' ? 'bg-[#8CD62B] text-stone-950 font-bold shadow-lg shadow-[#8CD62B]/20' : 'bg-[#18100a] text-stone-300 hover:text-white border border-[#3b271c] hover:border-[#8CD62B]/40'"
+                            class="px-4 py-2 rounded-xl text-xs transition-all whitespace-nowrap cursor-pointer">
+                        {{ catName }}
+                    </button>
+                {% endfor %}
+            </div>
+        </div>
+        
+        <!-- GRILLE DES PLATS (AFFICHAGE SUR 3 COLONNES SUR GRAND ÉCRAN) -->
+        {# lg:grid-cols-3 force l'affichage en 3 colonnes sur ordinateurs (md:grid-cols-2 sur tablettes) #}
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            {# Boucle Twig parcourant la liste des plats #}
+            {% for dish in dishes|default([]) %}
+                {% set dishCatId = dish.category.id ?? 'all' %}
+                {% set dishCatName = dish.category.name ?? dish.category.nomCategory ?? dish.category.nom ?? 'Spécialité' %}
+                {% set dishId = dish.id ?? loop.index %}
+                {% set dishName = dish.name ?? dish.nom ?? 'Plat Mikaia' %}
+                {% set dishRawPrice = dish.price ?? dish.prix ?? 0 %}
+                {% set dishDesc = dish.description ?? '' %}
+                {% set dishImg = dish.imageUrl ?? dish.image ?? null %}
+
+                {# Carte du plat : x-show masque/affiche la carte dynamiquement selon le filtre Alpine.js sans recharger la page #}
+                <div class="group bg-[#160f0a] border border-[#3b271c]/80 rounded-2xl overflow-hidden hover:border-[#8CD62B]/50 transition-all duration-300 flex flex-col justify-between shadow-xl" 
+                     x-show="selectedCategory === 'all' || selectedCategory === '{{ dishCatId }}'" 
+                     x-transition>
+                    
+                    <!-- Visuel du Plat -->
+                    {# h-36 : Hauteur ajustée pour conserver des proportions harmonieuses sur 3 colonnes #}
+                    <div class="h-36 relative overflow-hidden bg-stone-900">
+                        {% if dishImg %}
+                            {# Vérifie si l'image est un lien externe (http) ou un fichier local hébergé dans /uploads #}
+                            <img src="{{ dishImg starts with 'http' ? dishImg : asset('uploads/images/' ~ dishImg) }}" alt="{{ dishName }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
+                        {% else %}
+                            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=800&q=80" alt="{{ dishName }}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105" loading="lazy">
+                        {% endif %}
+                        <div class="absolute inset-0 bg-gradient-to-t from-[#160f0a] via-transparent to-transparent opacity-80"></div>
+                        <span class="absolute top-2.5 left-2.5 bg-[#110c09]/80 backdrop-blur-md text-[#8CD62B] text-[8px] font-bold uppercase tracking-wider px-2 py-0.5 rounded-full border border-[#8CD62B]/30">
+                            {{ dishCatName }}
+                        </span>
+                    </div>
+                    
+                    <!-- Contenu textuel -->
+                    <div class="p-3.5 space-y-2.5 flex-grow flex flex-col justify-between">
+                        <div>
+                            <div class="flex flex-col gap-1">
+                                {# line-clamp-1 tronque le nom sur une seule ligne si le titre est trop long #}
+                                <h3 class="text-sm font-serif font-bold text-white group-hover:text-[#8CD62B] transition line-clamp-1" title="{{ dishName }}">
+                                    {{ dishName }}
+                                </h3>
+                                {# Formatage Twig du prix avec un espace pour séparer les milliers (ex: 15 000 Ar) #}
+                                <span class="text-[#8CD62B] font-bold text-xs whitespace-nowrap">
+                                    {{ dishRawPrice|number_format(0, ',', ' ') }} Ar
+                                </span>
+                            </div>
+
+                            {# line-clamp-2 tronque la description à 2 lignes maximum pour garder les cartes alignées #}
+                            <p class="text-stone-400 text-[11px] leading-relaxed font-light mt-1 line-clamp-2" title="{{ dishDesc }}">
+                                {{ dishDesc }}
+                            </p>
+                        </div>
+                        
+                        <!-- Bouton d'action -->
+                        <div class="pt-2 border-t border-[#3b271c]/50">
+                            {# @click appelle la fonction AlpineJS addItem() en injectant les données Twig du plat #}
+                            {# |e('js') sécurise le nom du plat contre les erreurs d'échappement en JavaScript #}
+                            <button type="button"
+                                    @click="addItem({{ dishId }}, '{{ dishName|e('js') }}', {{ dishRawPrice|number_format(0, '', '') }})"
+                                    class="w-full bg-[#24170e] hover:bg-[#8CD62B] hover:text-stone-950 text-stone-200 text-[11px] font-semibold py-2 rounded-xl transition duration-300 flex items-center justify-center gap-1.5 active:scale-95 cursor-pointer">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-3.5 w-3.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                                </svg>
+                                <span>Ajouter</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            {% else %}
+                <div class="col-span-full text-center py-12 text-stone-500 italic text-sm">
+                    Aucun plat disponible pour le moment.
+                </div>
+            {% endfor %}
+        </div>
+    </div>
+
+    {# COLONNE DROITE (4 Cols sur XL) : BLOC PANIER FIXE #}
+    <div class="lg:col-span-5 xl:col-span-4">
+        {# sticky top-28 : Fixe le bloc panier pendant qu'on fait défiler les plats à gauche #}
+        <div id="cart-card" class="sticky top-28 bg-[#160f0a] border border-[#3b271c] rounded-2xl p-5 shadow-2xl space-y-4">
+            
+            <div class="flex items-center justify-between border-b border-[#3b271c]/60 pb-3">
+                <div class="flex items-center gap-2">
+                    <span class="text-lg">🛒</span>
+                    <h2 class="text-base font-serif font-bold text-white">Votre Commande</h2>
+                </div>
+                {# x-text évalue l'expression JavaScript et met à jour le texte du badge dynamiquement #}
+                <span class="text-xs bg-[#8CD62B]/10 text-[#8CD62B] px-2.5 py-1 rounded-full border border-[#8CD62B]/30 font-semibold"
+                      x-text="totalItemsCount() + (totalItemsCount() > 1 ? ' articles' : ' article')">
+                </span>
+            </div>
+            
+            <!-- LISTE DYNAMIQUE DES ARTICLES DANS LE PANIER -->
+            <div class="space-y-2.5 max-h-56 overflow-y-auto no-scrollbar pr-1">
+                {# Condition AlpineJS : s'affiche si le panier 'items' est vide #}
+                <template x-if="items.length === 0">
+                    <div class="text-center py-6">
+                        <p class="text-stone-500 text-xs italic">Votre panier est vide pour le moment.</p>
+                    </div>
+                </template>
+
+                {# Boucle AlpineJS sur le tableau 'items' pour afficher chaque plat ajouté #}
+                <template x-for="item in items" :key="item.id">
+                    <div class="flex items-center justify-between bg-[#110c09] p-2.5 rounded-xl border border-[#3b271c]/60 hover:border-[#8CD62B]/30 transition">
+                        <div class="flex-1 pr-2">
+                            <p class="font-semibold text-white text-xs line-clamp-1" x-text="item.name"></p>
+                            {# Affiche le prix sous-total du plat (prix unitaire x quantité) formaté en Ariary #}
+                            <p class="text-[11px] text-[#8CD62B] font-bold" x-text="formatMoney(item.price * item.quantity)"></p>
+                        </div>
+                        {# Contrôle de la quantité (- / +) #}
+                        <div class="flex items-center gap-1 bg-[#1b120b] p-1 rounded-lg border border-[#3b271c]">
+                            {# Modifie la quantité de -1 via updateQty() #}
+                            <button type="button" @click="updateQty(item.id, -1)" class="w-5 h-5 bg-[#2a1b10] hover:bg-[#8CD62B] hover:text-black rounded text-xs text-white transition flex items-center justify-center font-bold cursor-pointer">-</button>
+                            <span class="text-xs font-bold text-white w-4 text-center" x-text="item.quantity"></span>
+                            {# Modifie la quantité de +1 via updateQty() #}
+                            <button type="button" @click="updateQty(item.id, 1)" class="w-5 h-5 bg-[#2a1b10] hover:bg-[#8CD62B] hover:text-black rounded text-xs text-white transition flex items-center justify-center font-bold cursor-pointer">+</button>
+                        </div>
+                    </div>
+                </template>
+            </div>
+
+            <!-- CALCUL DES TOTAUX -->
+            <div class="border-t border-[#3b271c]/60 pt-3 space-y-1.5 text-xs">
+                <div class="flex justify-between text-stone-400">
+                    <span>Sous-total</span>
+                    <span class="text-stone-200 font-semibold" x-text="formatMoney(subtotal())"></span>
+                </div>
+                <div class="flex justify-between text-stone-400">
+                    <span>Frais de livraison</span>
+                    <span class="text-stone-200 font-semibold" x-text="formatMoney(deliveryFee())"></span>
+                </div>
+                <div class="flex justify-between text-white font-bold text-base pt-2 border-t border-[#3b271c]/40">
+                    <span>Total à payer</span>
+                    <span class="text-[#8CD62B]" x-text="formatMoney(total())"></span>
+                </div>
+            </div>
+
+            <!-- FORMULAIRE DE SOUMISSION -->
+            <form method="post" action="{{ path('app_front_order_place') }}" class="space-y-3 pt-1">
+                {# Champ caché crucial : convertit le tableau JS 'items' en chaîne JSON pour l'envoyer au Controller Symfony #}
+                <input type="hidden" name="cart_data" :value="JSON.stringify(items)">
+
+                <div>
+                    <label class="block text-[10px] uppercase tracking-wider text-stone-400 mb-1">Nom complet</label>
+                    <input type="text" name="customer_name" required placeholder="Ex: Jean Rabe" class="w-full bg-[#110c09] border border-[#3b271c] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#8CD62B] transition">
+                </div>
+
+                <div>
+                    <label class="block text-[10px] uppercase tracking-wider text-stone-400 mb-1">Mode de retrait</label>
+                    {# x-model lie ce champ de sélection à la variable reactive 'deliveryMode' (pour adapter les frais en direct) #}
+                    <select name="delivery_mode" x-model="deliveryMode" class="w-full bg-[#110c09] border border-[#3b271c] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#8CD62B] transition">
+                        <option value="livraison">Livraison à domicile (+5 000 Ar)</option>
+                        <option value="emporter">À emporter (Gratuit)</option>
+                        <option value="sur_place">Sur place (Table)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-[10px] uppercase tracking-wider text-stone-400 mb-1">Téléphone & Adresse / Table</label>
+                    <input type="text" name="table_number" required placeholder="Ex: 034 00 000 00 / Analakely" class="w-full bg-[#110c09] border border-[#3b271c] rounded-xl px-3 py-2 text-xs text-white focus:outline-none focus:border-[#8CD62B] transition">
+                </div>
+
+                {# Désactive le bouton d'envoi si le panier est vide (items.length === 0) #}
+                <button type="submit" 
+                        :disabled="items.length === 0"
+                        class="w-full bg-[#8CD62B] disabled:opacity-40 disabled:cursor-not-allowed hover:bg-[#7bc220] text-stone-950 font-bold py-3 rounded-xl transition shadow-lg shadow-[#8CD62B]/15 text-xs text-center cursor-pointer">
+                    Valider la commande
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION FLOTTANTE (TOAST) -->
+    {# Toast animé qui apparaît en haut à droite lors de l'ajout d'un plat #}
+    <div class="fixed top-6 right-6 z-50 transform transition-all duration-300 bg-[#8CD62B] text-stone-950 font-bold px-4 py-2.5 rounded-xl shadow-2xl flex items-center gap-2 text-xs pointer-events-none"
+         :class="toastShow ? 'translate-y-0 opacity-100' : '-translate-y-32 opacity-0'">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/></svg>
+        <span x-text="toastMessage"></span>
+    </div>
+
+</main>
+{% endblock %}
+
+{% block javascripts %}
+    {# Récupère les scripts hérités du base.html.twig #}
+    {{ parent() }}
+    {# Charge la bibliothèque légère AlpineJS pour la réactivité du panier #}
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+
+    <script>
+        // Attend l'initialisation d'AlpineJS avant de déclarer la logique du panier
+        document.addEventListener('alpine:init', () => {
+            Alpine.data('cartComponent', () => ({
+                // Charge les articles enregistrés dans le navigateur ou initialise un tableau vide []
+                items: JSON.parse(localStorage.getItem('mikaia_cart') || '[]'),
+                deliveryMode: 'livraison',
+                toastShow: false,
+                toastMessage: '',
+
+                init() {
+                    // $watch écoute les changements sur 'items' et les sauvegarde automatiquement dans le localStorage
+                    this.$watch('items', (val) => {
+                        localStorage.setItem('mikaia_cart', JSON.stringify(val));
+                    });
+                },
+
+                // Ajoute un article ou augmente sa quantité s'il existe déjà
+                addItem(id, name, price) {
+                    const existing = this.items.find(i => i.id === id);
+                    if (existing) {
+                        existing.quantity++;
+                    } else {
+                        this.items.push({ id, name, price, quantity: 1 });
+                    }
+                    this.showToast('Plat ajouté au panier !');
+                },
+
+                // Met à jour la quantité d'un article (-1 ou +1) et le supprime si la quantité tombe à 0
+                updateQty(id, delta) {
+                    const item = this.items.find(i => i.id === id);
+                    if (item) {
+                        item.quantity += delta;
+                        if (item.quantity <= 0) {
+                            this.items = this.items.filter(i => i.id !== id);
+                        }
+                    }
+                },
+
+                // Calcule le sous-total (Somme des prix * quantités)
+                subtotal() {
+                    return this.items.reduce((sum, item) => sum + (item.price * item.quantity), 0);
+                },
+
+                // Calcule les frais de livraison (5000 Ar si option 'livraison' choisie et panier non vide)
+                deliveryFee() {
+                    if (this.items.length === 0 || this.deliveryMode !== 'livraison') return 0;
+                    return 5000;
+                },
+
+                // Calcule le montant total général
+                total() {
+                    return this.subtotal() + this.deliveryFee();
+                },
+
+                // Calcule le nombre total d'articles (somme des quantités)
+                totalItemsCount() {
+                    return this.items.reduce((sum, item) => sum + item.quantity, 0);
+                },
+
+                // Formate les nombres au format monétaire local (ex: 15000 -> 15 000 Ar)
+                formatMoney(amount) {
+                    return new Intl.NumberFormat('fr-FR').format(amount) + ' Ar';
+                },
+
+                // Déclenche l'affichage temporaire du message toast
+                showToast(msg) {
+                    this.toastMessage = msg;
+                    this.toastShow = true;
+                    setTimeout(() => { this.toastShow = false; }, 2200);
+                }
+            }));
+        });
+    </script>
+{% endblock %}
